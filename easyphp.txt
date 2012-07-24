@@ -1,0 +1,54 @@
+edit by weloliang
+2012-06-14
+
+1.框架代码和业务代码彻底分开
+2.充分缩小各个App的配置文件大小，结构简明各个App没有直接的影响
+
+public 目录下 一个PHP文件对应一个应用程序，接收到请求后会转发到apps下的各个Controller去
+
+./ 根目录
+	+apps
+		+index
+			+controller
+			+model
+			+view
+				+elements
+			+log 各种日志	
+			db.php
+			acl.php
+			config.php
+			routes.php
+		+root 管理框架代码所须的
+			+controller
+			+model
+			+view
+				+elements
+			+log 各种日志
+			db.php
+			acl.php
+			routes.php
+	+modules 公共模块
+	+view 公共视图组件
+	+lib 框架PHP文件
+		+cache 缓存
+			cache.php
+		+template 放置各种样板,在自动布署脚本中使用
+		+core 内核，完成 MVC职责
+			log.php
+			controller.php
+			view.php
+		+db DB操作相关
+			sql.php
+			table.php
+			db.php
+		//+web web页面渲染
+		main.php 主入口
+		classes.php 所有必需类
+		
+	globalconfig.php 全局配置
+	+public
+		html,js,css
+		index.php
+		root.php
+		
+	

@@ -1,4 +1,0 @@
-easyphp
-=======
-
-for fun
