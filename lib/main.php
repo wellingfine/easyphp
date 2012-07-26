@@ -122,10 +122,10 @@ class E{
 	}
 	//设置usr信息
 	public function setUser($user){
-		$_SESSION[$this->config['acl_sessionKey']]=$user;
+		$_SESSION[$this->config['rbac_sessionKey']]=$user;
 	}
 	public function getUser(){
-		return $this->get($this->config['acl_sessionKey'],array(),$_SESSION);
+		return $this->get($this->config['rbac_sessionKey'],array(),$_SESSION);
 	}
 //-------------------------静态方法分隔线
 	public static function log($content,$tag=''){

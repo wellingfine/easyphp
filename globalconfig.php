@@ -17,19 +17,19 @@ $config=array(
 	),
 	
 	/*
-		框架本身的acl(Access Control List) 只能支持单角色
+		框架本身的rbac(Role Base Access Control) 只能支持单角色
 		先判deny后allow
 		如果deny为空，表示不deny任何人
 		如果allow为空，表示不allow任何人
 	*/
 	//权限控制 用户详细信息
-	'acl_userSessionKey'=>'ep_acl_user',
+	'rbac_userSessionKey'=>'ep_rbac_user',
 	//角色
-	'acl_roleSessionKey'=>'ep_acl_role',
-	//是否启用 acl
-	'acl_enable'=>true,
+	'rbac_roleSessionKey'=>'ep_rbac_role',
+	//是否启用 rbac
+	'rbac_enable'=>true,
 	//默认权限
-	'acl_default'=>'all',
+	'rbac_default'=>'all',
 	
 	//以下请勿覆盖-------
 	
