@@ -37,7 +37,13 @@ $config=array(
 	
 	//route engine
 	'route_enable'=>true,
-	
+	//默认路由
+	'route_default'=>array(
+		'/(.*?)/(.*?)/'=>array(
+			'controller'=>1,
+			'action'=>2,
+		),
+	),
 	//以下请勿覆盖-------
 	
 	//框架目录,默认是在项目目录的lib里面,如有需要可以更改

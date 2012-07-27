@@ -101,7 +101,7 @@ class E{
 		//url rewrite
 		if($this->config['route_enable']===true){
 			require_once($this->config['lib_dir'].DS.'core'.DS.'route.php');
-			$rules=require_once($this->config['app_dir'].DS.'route.php');
+			$rules=require_once($this->config['app_dir'].DS.'routes.php');
 			EP_Route::dispatch($controllerName,$actionName,$rules);
 		}else{
 			// 路由没开启时不能用get参数
