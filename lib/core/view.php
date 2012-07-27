@@ -35,7 +35,9 @@ class EP_View{
 					return ;
 				}
 			}
+			
 		}
+		E::log('view file:'.$name.' not found');
 	}
 	//装载一个视图组件并显示
 	//name 名称, $pub 是否是公有的组件，私有组件会放在
@@ -66,8 +68,8 @@ class EP_View{
 		$lastName=array_pop($this->blocks);
 		end($this->views);
 		$vk=key($this->views);
-		E::log('endBlock');
-		E::log($this->views);
+		//E::log('endBlock');
+		//E::log($this->views);
 		if($this->views[$vk]['isEnd']){//如果已经结束view，后来者不生效
 			if(isset($this->views[$vk]['blocks'][$lastName])){
 				echo $this->views[$vk]['blocks'][$lastName];

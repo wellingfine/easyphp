@@ -1,5 +1,5 @@
 #Ignore everything in the directory
 *.log
 
-#Except this file !.gitignore
-
+# ... except for this one.
+!.gitignore

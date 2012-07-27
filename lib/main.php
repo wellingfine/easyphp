@@ -46,6 +46,7 @@ class E{
 		spl_autoload_register(array($this, 'autoload'));
 	}
 	//初始化框架相关的东东,在start里面调用
+	//configs , logs ,
 	private function initApp(){
 		//装载应用程序配置，覆盖全局配置
 		$appConfig=require_once($this->config['app_dir'].DS.'config.php');
@@ -57,7 +58,7 @@ class E{
 		
 		
 		//初始化日志
-		$this->logObject=new Log(
+		$this->logObject=new EP_Log(
 			$this->config['app_dir'].DS.'logs'.DS.$this->config['log_name'],$this->config['log_bufferSize'],
 			$this->config['log_maxSize'],
 			$this->config['log_tagFilter']
@@ -87,7 +88,6 @@ class E{
 		//设定app的目录
 		$this->config['app_dir']=$this->config['project_dir'].DS.'apps'.DS.$appname;
 		$this->config['app_name']=$appname;
-		
 		if(!file_exists($this->config['app_dir'])){
 			//app not found
 			echo 'app ['.$appname.'] is not exsit.';
@@ -96,12 +96,35 @@ class E{
 		//确定app目录后初始化
 		$this->initApp();
 		
-		$controllerName=E::get('controller','default');
-		$actionName=E::get('action','default');
+		$controllerName='default';
+		$actionName='default';
+		//url rewrite
+		if($this->config['route_enable']===true){
+			require_once($this->config['lib_dir'].DS.'core'.DS.'route.php');
+			$rules=require_once($this->config['app_dir'].DS.'route.php');
+			EP_Route::dispatch($controllerName,$actionName,$rules);
+		}else{
+			// 路由没开启时不能用get参数
+			$controllerName=E::get('controller','default');
+			$actionName=E::get('action','default');			
+		}
+		//Role Base Access Control start
+		if($this->config['rbac_enable']===true){
+			$dftAcl=$this->config['rbac_default'];
+			$acl=require_once($this->config['app_dir'].DS.'acl.php');
+			$ctrlAcl=$this->get($controllerName,$dftAcl,$acl);
+			if(empty($ctrlAcl['actions']))
+				$actAcl=$dftAcl;
+			else
+				$actAcl=$this->get($actionName,array(),$ctrlAcl['actions']);
+		}
+		
 		$this->config['controller']=$controllerName;
 		$this->config['action']=$actionName;
 		E::log("$__starttime {$appname}[{$controllerName}/{$actionName}]",'core');
 		$controller=$controllerName.'_controller';
+		
+		//装载controller
 		$this->loadFile($controller,$this->config['app_dir'].DS.'controller');
 		
 		if(class_exists($controller,false)
@@ -126,6 +149,9 @@ class E{
 	}
 	public function getUser(){
 		return $this->get($this->config['rbac_sessionKey'],array(),$_SESSION);
+	}
+	public function getRole(){
+		return $this->get($this->config['rbac_roleSessionKey'],'',$_SESSION);
 	}
 //-------------------------静态方法分隔线
 	public static function log($content,$tag=''){

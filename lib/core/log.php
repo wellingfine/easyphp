@@ -1,5 +1,5 @@
 <?php
-class Log{
+class EP_Log{
 	
 	private $log;
 	private $currentSize=0;//当前缓冲区大小

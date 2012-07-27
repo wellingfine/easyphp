@@ -1,46 +1,53 @@
 <?php
-//È«¾ÖÅäÖÃ
-//ÎªÁËÅäÖÃµÄ¼òµ¥£¬Ö»Ö§³ÖÒ»Î¬Êı×é£¬ÔÚÓ¦ÓÃ³ÌĞòÖĞµÄ
-//³£Á¿¶¨Òå
+//å…¨å±€é…ç½®
+//ä¸ºäº†é…ç½®çš„ç®€å•ï¼Œåªæ”¯æŒä¸€ç»´æ•°ç»„ï¼Œåœ¨åº”ç”¨ç¨‹åºä¸­çš„
+//å¸¸é‡å®šä¹‰
 define('DS', DIRECTORY_SEPARATOR);
 
 $config=array(
-	//ÈÕÖ¾»º³åÇø´óĞ¡
+	//æ—¥å¿—ç¼“å†²åŒºå¤§å°
 	'log_bufferSize'=>1024,
-	//¿ò¼ÜÔËĞĞÈÕÖ¾ true¿ªÆô£¬·Çtrue¹Ø±Õ
+	//æ¡†æ¶è¿è¡Œæ—¥å¿— trueå¼€å¯ï¼Œétrueå…³é—­
 	'log_enable'=>true,
-	//ÈÕÖ¾×î´óÈİÁ¿ 50M
+	//æ—¥å¿—æœ€å¤§å®¹é‡ 50M
 	'log_maxSize'=>50*1024*1024,
-	'log_name'=>'app.log',//logµÄÃû×Ö
-	'log_tagFilter'=>array(//±êÇ©¹ıÂË£¬²»ÏÔÊ¾ÒÔÏÂµÄ±êÇ©
+	'log_name'=>'app.log',//logçš„åå­—
+	'log_tagFilter'=>array(//æ ‡ç­¾è¿‡æ»¤ï¼Œä¸æ˜¾ç¤ºä»¥ä¸‹çš„æ ‡ç­¾
 		//'core',
 	),
 	
 	/*
-		¿ò¼Ü±¾ÉíµÄrbac(Role Base Access Control) Ö»ÄÜÖ§³Öµ¥½ÇÉ«
-		ÏÈÅĞdenyºóallow
-		Èç¹ûdenyÎª¿Õ£¬±íÊ¾²»denyÈÎºÎÈË
-		Èç¹ûallowÎª¿Õ£¬±íÊ¾²»allowÈÎºÎÈË
+		æ¡†æ¶æœ¬èº«çš„rbac(Role Base Access Control) åªèƒ½æ”¯æŒå•è§’è‰²
+		å…ˆåˆ¤denyåallow
+		å¦‚æœdenyä¸ºç©ºï¼Œè¡¨ç¤ºä¸denyä»»ä½•äºº
+		å¦‚æœallowä¸ºç©ºï¼Œè¡¨ç¤ºä¸allowä»»ä½•äºº
 	*/
-	//È¨ÏŞ¿ØÖÆ ÓÃ»§ÏêÏ¸ĞÅÏ¢
+	//æƒé™æ§åˆ¶ ç”¨æˆ·è¯¦ç»†ä¿¡æ¯
 	'rbac_userSessionKey'=>'ep_rbac_user',
-	//½ÇÉ«
+	//è§’è‰²
 	'rbac_roleSessionKey'=>'ep_rbac_role',
-	//ÊÇ·ñÆôÓÃ rbac
+	//æ˜¯å¦å¯ç”¨ rbac
 	'rbac_enable'=>true,
-	//Ä¬ÈÏÈ¨ÏŞ
-	'rbac_default'=>'all',
+	//é»˜è®¤æƒé™:å…¨å¼€æ”¾
+	'rbac_default'=>array(
+		'deny'=>array(),//ç©ºï¼Œä¸è¿›è¡Œdenyåˆ¤æ–­
+		'allow'=>array(),//ç©ºï¼Œä¸è¿›è¡Œallowåˆ¤æ–­
+		'allow_has_role'=>false,//æ˜¯å¦åˆ¤æ–­æœ‰è§’è‰²
+	),
 	
-	//ÒÔÏÂÇëÎğ¸²¸Ç-------
+	//route engine
+	'route_enable'=>true,
 	
-	//¿ò¼ÜÄ¿Â¼,Ä¬ÈÏÊÇÔÚÏîÄ¿Ä¿Â¼µÄlibÀïÃæ,ÈçÓĞĞèÒª¿ÉÒÔ¸ü¸Ä
+	//ä»¥ä¸‹è¯·å‹¿è¦†ç›–-------
+	
+	//æ¡†æ¶ç›®å½•,é»˜è®¤æ˜¯åœ¨é¡¹ç›®ç›®å½•çš„libé‡Œé¢,å¦‚æœ‰éœ€è¦å¯ä»¥æ›´æ”¹
 	'lib_dir'=>dirname(__FILE__).DS.'lib',
-	//ÏîÄ¿Ä¿Â¼,ºÍ globalconfig.php ÔÚÍ¬Ò»¸öÄ¿Â¼
+	//é¡¹ç›®ç›®å½•,å’Œ globalconfig.php åœ¨åŒä¸€ä¸ªç›®å½•
 	'project_dir'=>dirname(__FILE__),
 
 );
 
-//×°ÔØ¿ò¼ÜÖ÷Àà
+//è£…è½½æ¡†æ¶ä¸»ç±»
 require_once($config['lib_dir'].DS.'main.php');
-//³õÊ¼»¯Ö÷Àà
+//åˆå§‹åŒ–ä¸»ç±»
 E::instance($config);
