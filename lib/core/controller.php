@@ -8,7 +8,7 @@ class EP_Controller{
 	function __execute($act,$args=array()){
 		$actFullName='action'.$act;
 		if(method_exists($this,$actFullName)){
-			$this->viewObject=new EP_View();
+			$this->_viewObject=new EP_View();
 		
 			if(!$this->onBeforeExecute($act))return ;
 			
@@ -17,15 +17,16 @@ class EP_Controller{
 			$this->onAfterExecute($act);
 			E::log('create view...','core');
 			
-			$this->viewObject->show($this->_views);
+			$this->_viewObject->show($this->_views);
 		}else{
 			$this->onActionUndefined($act);
 		}
 	}
 	// 给一个自定义模板的方法，方便在controller 临时有构建页面片的需求
+	/*
 	function showPage($name,$args=''){
 		$this->_viewObject->render($name,$args);
-	}
+	}*/
 	
 	protected function onBeforeExecute($actionName){
 		return true;
