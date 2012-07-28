@@ -1,5 +1,5 @@
 <?php
-abstract class EP_Controller{
+class EP_Controller{
 	
 	//传递到页面的参数
 	protected $_views;
@@ -8,8 +8,6 @@ abstract class EP_Controller{
 	function __execute($act,$args=array()){
 		$actFullName='action'.$act;
 		if(method_exists($this,$actFullName)){
-			
-			
 			$this->viewObject=new EP_View();
 		
 			if(!$this->onBeforeExecute($act))return ;
@@ -36,7 +34,7 @@ abstract class EP_Controller{
 		return true;
 	}
 	protected function onActionUndefined($actionName){
-		
+		$this->showPage(E::config('not_found_page'));
 		//throw new Exception('undefined action ['.$actionName.']');
 		E::log('undefined action ['.$actionName.']','error');
 	}

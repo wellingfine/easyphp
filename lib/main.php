@@ -134,6 +134,8 @@ class E{
 			$controller->__execute($actionName);
 		}else{
 			E::log('controller ['.$controller.'] is not exsit.','error');
+			$controller=new EP_Controller();
+			$controller->showPage($this->config['not_found_page']);
 		}
 		//保证把日志输出
 		E::log($__starttime.' used '.( microtime(true)-$__starttime ),'core')->flush(true);

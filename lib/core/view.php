@@ -20,27 +20,8 @@ class EP_View{
 		);
 
 	}
-	//在各个关键目录中搜索并装入
-	function render($name,$args=''){
-		if(is_array($args)){
-			extract($args);
-		}
-		if(file_exists($name)){
-			require($name);
-		}else{
-			foreach($this->view_dirs as $d){
-				$d=$d.DS.$name.'.php';
-				if(file_exists($d)){
-					require($d);
-					return ;
-				}
-			}
-			
-		}
-		E::log('view file:'.$name.' not found');
-	}
 	//装载一个视图组件并显示
-	//name 名称, $pub 是否是公有的组件，私有组件会放在
+	//name without '.php'
 	private function view($name){
 		$this->views[]=array(
 			'name'=>$name,
@@ -54,9 +35,9 @@ class EP_View{
 		$vk=key($this->views);
 		$this->views[$vk]['isEnd']=true;
 		
+		//a view reach its end,so render and pop it up 
 		$this->render($this->views[$vk]['name']);
-		
-		array_pop($this->views[$vk]);//弹出
+		array_pop($this->views[$vk]);
 	}
 	private function block($name){
 		ob_start();
@@ -81,9 +62,34 @@ class EP_View{
 		}
 	}
 	
-	//显示自己
+	//get args and show it out
 	function show($args){
-		$this->render(E::config('action'),$args);
+		$suc=$this->render(E::config('action'),$args);
+		if(!$suc){//view not found
+			E::log('view file:'.$name.' not found');
+			$this->render(E::config('not_found_page'),$args);
+		}
+	}
+	
+	//search view with name
+	//$name:a full path name or view's name without '.php'
+	function render($name,$args=''){
+		if(is_array($args)){
+			extract($args);
+		}
+		if(file_exists($name)){
+			require($name);
+			return true;
+		}else{
+			foreach($this->view_dirs as $d){
+				$d=$d.DS.$name.'.php';
+				if(file_exists($d)){
+					require($d);
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 }
 
