@@ -24,7 +24,7 @@ class EP_Route{
 				$actName=E::get($rule['action'],'',$matches);
 				if(isset($rule['args'])){
 					foreach($args as $name=>$id){
-						$_GET[]
+						//$_GET[]
 					}
 				}
 			}

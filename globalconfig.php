@@ -39,11 +39,9 @@ $config=array(
 	'route_enable'=>true,
 	//默认路由,将合并到配置路由的最后一行中
 	'route_default'=>array(
-		array(
-			'rule'=>'/(.*?)/(.*?)/{0,1}',
-			'controller'=>1,
-			'action'=>2,
-		),
+		'rule'=>'/(.*?)/(.*?)/{0,1}',
+		'controller'=>1,
+		'action'=>2,
 	),
 	
 	//404自定义页面,具体是哪种404，ctrl|action|view 日志上有体现
