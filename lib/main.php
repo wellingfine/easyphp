@@ -59,13 +59,15 @@ class E{
 		require_once('classes.php');
 		
 		
-		//初始化日志
+		//初始化系统日志
 		$this->logObject=new EP_Log(
 			$this->config['app_dir'].DS.'logs'.DS.$this->config['log_name'],$this->config['log_bufferSize'],
 			$this->config['log_maxSize'],
 			$this->config['log_tagFilter']
 		);
 		$this->logObject->setEnable($this->config['log_enable']);
+		//View
+		$this->viewObject=new EP_View();
 	}
 	private function autoLoad($className){
 		$ret=E::loadFile($className,array(
@@ -92,7 +94,8 @@ class E{
 		$this->config['app_name']=$appname;
 		if(!file_exists($this->config['app_dir'])){
 			//app not found
-			echo 'app ['.$appname.'] is not exsit.';
+			E::log('app ['.$appname.'] is not exsit.');
+			$this->displayView($this->config['app_not_found']);
 			return ;
 		}
 		//确定app目录后初始化
@@ -136,11 +139,14 @@ class E{
 			$controller->__execute($actionName);
 		}else{
 			E::log('controller ['.$controller.'] is not exsit.','error');
-			$view=new EP_View();
-			$view->render($this->config['not_found_page']);
+			$this->displayView($this->config['controller_not_found']);
 		}
-		//保证把日志输出
+		//保证把日志输出->flush()
 		E::log($__starttime.' used '.( microtime(true)-$__starttime ),'core')->flush(true);
+	}
+	
+	public function displayView($viewName,$args=''){
+		return $this->viewObject->render($viewName,$args);
 	}
 	//设置usr信息
 	public function setUser($user){

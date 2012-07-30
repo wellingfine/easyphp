@@ -44,8 +44,12 @@ $config=array(
 		'action'=>2,
 	),
 	
-	//404自定义页面,具体是哪种404，ctrl|action|view 日志上有体现
-	'not_found_page'=>'404',
+	//404自定义页面,有四种not found
+	//if empty then ignore,and only can see what happen in log.
+	'app_not_found'=>'404',
+	'controller_not_found'=>'404',
+	'action_not_found'=>'404',
+	'view_not_found'=>'',
 	
 	//
 	'charset'=>'utf-8',

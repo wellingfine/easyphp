@@ -60,20 +60,13 @@ class EP_View{
 		}else{//未结束的话，blocks如果有同名那么后来者生效
 			$this->views[$vk]['blocks'][$lastName]=$html;
 		}
-	}
-	
-	//get args and show it out
-	function show($args){
-		$suc=$this->render(E::config('action'),$args);
-		if(!$suc){//view not found
-			E::log('view file:'.$name.' not found');
-			$this->render(E::config('not_found_page'),$args);
-		}
-	}
-	
+	}	
 	//search view with name
 	//$name:a full path name or view's name without '.php'
+	//return true if found else return false
 	function render($name,$args=''){
+		//empty means kiding :)
+		if($name=='')return true;
 		if(is_array($args)){
 			extract($args);
 		}
