@@ -106,8 +106,7 @@ class E{
 		//url rewrite
 		if($this->config['route_enable']===true){
 			require_once($this->config['lib_dir'].DS.'core'.DS.'route.php');
-			$rules=require_once($this->config['app_dir'].DS.'routes.php');
-			EP_Route::dispatch($controllerName,$actionName,$rules);
+			EP_Route::dispatch($controllerName,$actionName);
 		}else{
 			// 路由没开启时才用get参数
 			$controllerName=E::get('controller','default');
@@ -115,15 +114,15 @@ class E{
 		}
 		//Role Base Access Control start
 		if($this->config['rbac_enable']===true){
-			$dftAcl=$this->config['rbac_default'];
-			$acl=require_once($this->config['app_dir'].DS.'acl.php');
-			$ctrlAcl=$this->get($controllerName,$dftAcl,$acl);
-			if(empty($ctrlAcl['actions']))
-				$actAcl=$dftAcl;
-			else
-				$actAcl=$this->get($actionName,array(),$ctrlAcl['actions']);
+			require_once($this->config['lib_dir'].DS.'core'.DS.'rbac.php');
+			if(!EP_Rbac::identify($controllerName,$actionName)){
+				E::log('no ')
+				$this->displayView($this->config['rbac_failed_page']);
+				return ;
+			}
 		}
 		
+		//write down current ctrl and act
 		$this->config['controller']=$controllerName;
 		$this->config['action']=$actionName;
 		//E::log("$__starttime {$appname}[{$controllerName}/{$actionName}]",'core');
@@ -152,8 +151,9 @@ class E{
 		return $this->viewObject->render($viewName,$args);
 	}
 	//设置usr信息
-	public function setUser($user){
+	public function setUser($user,$role){
 		$_SESSION[$this->config['rbac_sessionKey']]=$user;
+		$_SESSION[$this->config['rbac_roleSessionKey']]=$role;
 	}
 	public function getUser(){
 		return $this->get($this->config['rbac_sessionKey'],array(),$_SESSION);

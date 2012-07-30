@@ -28,12 +28,10 @@ $config=array(
 	'rbac_roleSessionKey'=>'ep_rbac_role',
 	//是否启用 rbac
 	'rbac_enable'=>true,
-	//默认权限:全开放
-	'rbac_default'=>array(
-		'deny'=>array(),//空，不进行deny判断
-		'allow'=>array(),//空，不进行allow判断
-		'allow_has_role'=>false,//是否判断有角色
-	),
+	//默认权限:all 
+	'rbac_default'=>'.*',
+	//身份认证失败页面
+	'rbac_failed_page'=>'',
 	
 	//route engine
 	'route_enable'=>true,

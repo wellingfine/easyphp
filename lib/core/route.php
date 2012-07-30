@@ -6,7 +6,9 @@ class EP_Route{
 	
 	
 	//从 path info 中获取 ctrlname 和 actname
-	public static function dispatch(&$ctrlName,&$actName,$rules){
+	public static function dispatch(&$ctrlName,&$actName){
+		$rules=require_once(E::config('app_dir').DS.'routes.php');
+		
 		$path_info = '/';
 		$path_info = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : $path_info;
 		$path_info = isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : $path_info;
@@ -17,7 +19,7 @@ class EP_Route{
 			$r=$rule['rule'];
 			//$rule=trim($rule,'/ ');
 			// replace / to \/
-			$r='/^'.preg_replace('/\//','\\\/',$r).'$/';
+			$r='/^'.preg_replace('/\//','\\/',$r).'$/';
 			//E::log($r);
 			if(preg_match($r,$path_info,$matches)){
 				$ctrlName=E::get($rule['controller'],'',$matches);
