@@ -19,9 +19,8 @@
 <IfModule mod_rewrite.c>
 	RewriteCond %{REQUEST_FILENAME} !-f
 #	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteRule ^(about|me)/{0,1}$ index.php/$1 [L]
-	RewriteRule ^([0-9a-zA-Z]+)$ $1.php [L]
-	RewriteRule ^([0-9a-zA-Z]+)/(.*)$ $1.php/$2 [L]
+#	RewriteRule ^([0-9a-zA-Z]+)$ $1.php [L]
+	RewriteRule ^([0-9a-zA-Z]+)(.*)$  ($1.php$2 [L]
 </IfModule>
 
-ErrorDocument 404 /404.php
+#ErrorDocument 404 /404.php

@@ -37,15 +37,18 @@ $config=array(
 	
 	//route engine
 	'route_enable'=>true,
-	//默认路由
-	/*
+	//默认路由,将合并到配置路由的最后一行中
 	'route_default'=>array(
-		'/(.*?)/(.*?)/'=>array(
-			'controller'=>1,
-			'action'=>2,
-		),
-	),*/
+		'rule'=>'/(.*?)/(.*?)/{0,1}',
+		'controller'=>1,
+		'action'=>2,
+	),
 	
+	//404自定义页面,具体是哪种404，ctrl|action|view 日志上有体现
+	'not_found_page'=>'404',
+	
+	//
+	'charset'=>'utf-8',
 	//以下请勿覆盖-------
 	
 	//框架目录,默认是在项目目录的lib里面,如有需要可以更改

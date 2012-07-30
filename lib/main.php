@@ -13,6 +13,8 @@ class E{
 	
 	private $logObject;
 	
+	private $viewObject;
+	
 	private static $instance=null;
 	
 	private $classPaths=array();
@@ -104,7 +106,7 @@ class E{
 			$rules=require_once($this->config['app_dir'].DS.'routes.php');
 			EP_Route::dispatch($controllerName,$actionName,$rules);
 		}else{
-			// 路由没开启时不能用get参数
+			// 路由没开启时才用get参数
 			$controllerName=E::get('controller','default');
 			$actionName=E::get('action','default');			
 		}
@@ -134,14 +136,11 @@ class E{
 			$controller->__execute($actionName);
 		}else{
 			E::log('controller ['.$controller.'] is not exsit.','error');
+			$view=new EP_View();
+			$view->render($this->config['not_found_page']);
 		}
 		//保证把日志输出
 		E::log($__starttime.' used '.( microtime(true)-$__starttime ),'core')->flush(true);
-	}
-	//显示视图
-	public function displayView($args){
-		$v=new EP_View($args);
-		$v->show();
 	}
 	//设置usr信息
 	public function setUser($user){
@@ -154,6 +153,10 @@ class E{
 		return $this->get($this->config['rbac_roleSessionKey'],'',$_SESSION);
 	}
 //-------------------------静态方法分隔线
+	//end up session block ,so next session can go on.
+	public static function end(){
+		session_write_close();
+	}
 	public static function log($content,$tag=''){
 		$inst=self::instance();
 		$inst->logObject->log($content,$tag);
