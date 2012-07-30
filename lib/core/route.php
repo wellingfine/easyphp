@@ -24,7 +24,7 @@ class EP_Route{
 				$actName=E::get($rule['action'],'',$matches);
 				if(isset($rule['args'])){
 					//assign args to $_GET and if REQUEST isn't set assgin to it too(avoid same arg in $_POST)
-					foreach($args as $name=>$id){
+					foreach($rule['args'] as $name=>$id){
 						$_GET[$name]=E::get($id,'',$matches);
 						if(!isset($_REQUEST[$name])){
 							$_REQUEST[$name]=$_GET[$name];

@@ -126,7 +126,9 @@ class E{
 		
 		$this->config['controller']=$controllerName;
 		$this->config['action']=$actionName;
-		E::log("$__starttime {$appname}[{$controllerName}/{$actionName}]",'core');
+		//E::log("$__starttime {$appname}[{$controllerName}/{$actionName}]",'core');
+		E::log("begin:{$appname}[{$controllerName}/{$actionName}]",'core');
+		
 		$controller=$controllerName.'_controller';
 		
 		//装载controller
@@ -142,9 +144,10 @@ class E{
 			$this->displayView($this->config['controller_not_found']);
 		}
 		//保证把日志输出->flush()
-		E::log($__starttime.' used '.( microtime(true)-$__starttime ),'core')->flush(true);
+		//E::log($__starttime.' used '.( microtime(true)-$__starttime ),'core')->flush(true);
+		E::log('used '.round( microtime(true)-$__starttime,5 ).'s','core')->flush(true);
 	}
-	
+	//显示视图
 	public function displayView($viewName,$args=''){
 		return $this->viewObject->render($viewName,$args);
 	}

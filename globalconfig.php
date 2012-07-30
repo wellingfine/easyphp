@@ -42,6 +42,7 @@ $config=array(
 		'rule'=>'/(.*?)/(.*?)/{0,1}',
 		'controller'=>1,
 		'action'=>2,
+		'args'=>array(),//参数
 	),
 	
 	//404自定义页面,有四种not found
