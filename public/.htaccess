@@ -13,9 +13,12 @@
 	RewriteEngine On
 </IfModule>
 
-# For all files not found in the file system, reroute the request to the
-# "xxx.php" front controller, keeping the query string intact
-
+# have following condition tested:
+# is a dir 
+# exist file
+# not exist file
+# /xxxx
+# /xxxx/xxxx/xxx/
 <IfModule mod_rewrite.c>
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
@@ -23,6 +26,6 @@
 	RewriteRule ^(\w+)$ $1.php [L]
 </IfModule>
 
-#ErrorDocument 403 /t.php
-#ErrorDocument 404 /t.php
-#ErrorDocument 500 /a.php
+ErrorDocument 403 /403.php
+ErrorDocument 404 /404.php
+ErrorDocument 500 /500.php

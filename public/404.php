@@ -1,6 +1,8 @@
 <?php 
 //当出现404时，判断是不是真的404
-//将请求过一下全局路由 ,使得可以建立些
+echo '404<br>';
+echo nl2br(var_export($_SERVER,true));
+return ;
 if(true){
 	header('HTTP/1.1 200 OK');
 	header('Location: /index'.$_SERVER['REQUEST_URI']);
