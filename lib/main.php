@@ -1,15 +1,15 @@
 <?php
 /*
- * ¼üÃûÓÃÏÂ»®Ïß·Ö¸ô
- * Ô¼¶¨£º
- * #.dir ±íÊ¾²»´ø DS £¬path ±íÊ¾´ø DS £¬filePath ±íÊ¾¾ø¶ÔÂ·¾¶
- * #.·²ÊÇEasyPHPµÄÀà¶¼´øÉÏ EP_ Ç°×º
+ * é”®åç”¨ä¸‹åˆ’çº¿åˆ†éš”
+ * çº¦å®šï¼š
+ * #.dir è¡¨ç¤ºä¸å¸¦ DS ï¼Œpath è¡¨ç¤ºå¸¦ DS ï¼ŒfilePath è¡¨ç¤ºç»å¯¹è·¯å¾„
+ * #.å‡¡æ˜¯EasyPHPçš„ç±»éƒ½å¸¦ä¸Š EP_ å‰ç¼€
  */
 //global $__starttime;
 $__starttime=microtime (true);
 
 class E{
-	private $config;//ÅäÖÃÖ»¶Á
+	private $config;//é…ç½®åªè¯»
 	
 	private $logObject;
 	
@@ -21,16 +21,16 @@ class E{
 	
 	
 	/*
-	³õÊ¼»¯£¬²»Ó¦¸Ã°üº¬ÆäËüÀàµÄ³õÊ¼»¯
+	åˆå§‹åŒ–ï¼Œä¸åº”è¯¥åŒ…å«å…¶å®ƒç±»çš„åˆå§‹åŒ–
 	*/
 	private function __construct($config){
 		$this->config=$config;
 		
-		//¿ªÆôsession
+		//å¼€å¯session
 		session_start();
-		// ½ûÖ¹ magic quotes
+		// ç¦æ­¢ magic quotes
         @set_magic_quotes_runtime(0);
-        // ´¦Àí±» magic quotes ×Ô¶¯×ªÒå¹ıµÄÊı¾İ
+        // å¤„ç†è¢« magic quotes è‡ªåŠ¨è½¬ä¹‰è¿‡çš„æ•°æ®
         if (get_magic_quotes_gpc()){
             $in = array(& $_GET, & $_POST, & $_COOKIE, & $_REQUEST);
             while (list ($k, $v) = each($in)){
@@ -44,22 +44,22 @@ class E{
             }
             unset($in);
         }
-		//×Ô¶¯ÔØÈë
+		//è‡ªåŠ¨è½½å…¥
 		spl_autoload_register(array($this, 'autoload'));
 	}
-	//³õÊ¼»¯¿ò¼ÜÏà¹ØµÄ¶«¶«,ÔÚstartÀïÃæµ÷ÓÃ
+	//åˆå§‹åŒ–æ¡†æ¶ç›¸å…³çš„ä¸œä¸œ,åœ¨starté‡Œé¢è°ƒç”¨
 	//configs , logs ,
 	private function initApp(){
-		//×°ÔØÓ¦ÓÃ³ÌĞòÅäÖÃ£¬¸²¸ÇÈ«¾ÖÅäÖÃ
+		//è£…è½½åº”ç”¨ç¨‹åºé…ç½®ï¼Œè¦†ç›–å…¨å±€é…ç½®
 		$appConfig=require_once($this->config['app_dir'].DS.'config.php');
 		foreach($appConfig as $k=>$v){
 			$this->config[$k]=$v;
 		}
-		//×°ÔØËùÓĞºËĞÄÀà
+		//è£…è½½æ‰€æœ‰æ ¸å¿ƒç±»
 		require_once('classes.php');
 		
 		
-		//³õÊ¼»¯ÏµÍ³ÈÕÖ¾
+		//åˆå§‹åŒ–ç³»ç»Ÿæ—¥å¿—
 		$this->logObject=new EP_Log(
 			$this->config['app_dir'].DS.'logs'.DS.$this->config['log_name'],$this->config['log_bufferSize'],
 			$this->config['log_maxSize'],
@@ -80,16 +80,16 @@ class E{
 		}
 	}
 	
-	//¿ªÊ¼·Ö·¢ÇëÇó
+	//å¼€å§‹åˆ†å‘è¯·æ±‚
 	/*
-		¿ÉÄÜµÄ´íÎó
-		1.app²»´æÔÚ
-		2.controller²»´æÔÚ
-		3.action ²»´æÔÚ
+		å¯èƒ½çš„é”™è¯¯
+		1.appä¸å­˜åœ¨
+		2.controllerä¸å­˜åœ¨
+		3.action ä¸å­˜åœ¨
 	*/
 	public function start ($appname='index'){
 		global $__starttime;
-		//Éè¶¨appµÄÄ¿Â¼
+		//è®¾å®šappçš„ç›®å½•
 		$this->config['app_dir']=$this->config['project_dir'].DS.'apps'.DS.$appname;
 		$this->config['app_name']=$appname;
 		if(!file_exists($this->config['app_dir'])){
@@ -98,7 +98,7 @@ class E{
 			$this->displayView($this->config['app_not_found']);
 			return ;
 		}
-		//È·¶¨appÄ¿Â¼ºó³õÊ¼»¯
+		//ç¡®å®šappç›®å½•ååˆå§‹åŒ–
 		$this->initApp();
 		
 		$controllerName='default';
@@ -108,7 +108,7 @@ class E{
 			require_once($this->config['lib_dir'].DS.'core'.DS.'route.php');
 			EP_Route::dispatch($controllerName,$actionName);
 		}else{
-			// Â·ÓÉÃ»¿ªÆôÊ±²ÅÓÃget²ÎÊı
+			// è·¯ç”±æ²¡å¼€å¯æ—¶æ‰ç”¨getå‚æ•°
 			$controllerName=E::get('controller','default');
 			$actionName=E::get('action','default');			
 		}
@@ -130,7 +130,7 @@ class E{
 		
 		$controller=$controllerName.'_controller';
 		
-		//×°ÔØcontroller
+		//è£…è½½controller
 		$this->loadFile($controller,$this->config['app_dir'].DS.'controller');
 		
 		if(class_exists($controller,false)
@@ -142,15 +142,15 @@ class E{
 			E::log('controller ['.$controller.'] is not exsit.','error');
 			$this->displayView($this->config['controller_not_found']);
 		}
-		//±£Ö¤°ÑÈÕÖ¾Êä³ö->flush()
+		//ä¿è¯æŠŠæ—¥å¿—è¾“å‡º->flush()
 		//E::log($__starttime.' used '.( microtime(true)-$__starttime ),'core')->flush(true);
 		E::log('used '.round( microtime(true)-$__starttime,5 ).'s','core')->flush(true);
 	}
-	//ÏÔÊ¾ÊÓÍ¼
+	//æ˜¾ç¤ºè§†å›¾
 	public function displayView($viewName,$args=''){
 		return $this->viewObject->render($viewName,$args);
 	}
-	//ÉèÖÃusrĞÅÏ¢
+	//è®¾ç½®usrä¿¡æ¯
 	public function setUser($user,$role){
 		$_SESSION[$this->config['rbac_sessionKey']]=$user;
 		$_SESSION[$this->config['rbac_roleSessionKey']]=$role;
@@ -161,7 +161,7 @@ class E{
 	public function getRole(){
 		return $this->get($this->config['rbac_roleSessionKey'],'',$_SESSION);
 	}
-//-------------------------¾²Ì¬·½·¨·Ö¸ôÏß
+//-------------------------é™æ€æ–¹æ³•åˆ†éš”çº¿
 	//end up session block ,so next session can go on.
 	public static function end(){
 		session_write_close();
@@ -200,7 +200,7 @@ class E{
 		}
 	}
 	/*
-	 * »ñÈ¡Êı×éµÄÖµ
+	 * è·å–æ•°ç»„çš„å€¼
 	 */
 	public static function get($key,$default='',$arr=null){
 		if($arr==null){

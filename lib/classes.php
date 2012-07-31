@@ -1,5 +1,5 @@
 <?php
-//列举所有核心类然后
+//鍒椾妇鎵�鏈夋牳蹇冪被鐒跺悗
 $class=array(
 	'core/controller.php',
 	'core/log.php',

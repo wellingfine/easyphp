@@ -2,9 +2,9 @@
 // role base access control
 // by welling 2012-07-30
 /*
-	Ê¹ÓÃÕıÔòÆ¥ÅäÓÃ»§½ÇÉ«,Èç¹û·ûºÏÔòÑéÖ¤Í¨¹ı
-	ÓÅµãÔÚÓÚ¿ÉÒÔ¶¨ÒåÒ»Àà½ÇÉ«(eg. admin_aaa,admin_bbb)£¬È»ºóÒ»ÌõÕıÔò¸ã¶¨¡£
-	Ò²¼òµ¥Ò×ĞĞ
+	ä½¿ç”¨æ­£åˆ™åŒ¹é…ç”¨æˆ·è§’è‰²,å¦‚æœç¬¦åˆåˆ™éªŒè¯é€šè¿‡
+	ä¼˜ç‚¹åœ¨äºå¯ä»¥å®šä¹‰ä¸€ç±»è§’è‰²(eg. admin_aaa,admin_bbb)ï¼Œç„¶åä¸€æ¡æ­£åˆ™æå®šã€‚
+	ä¹Ÿç®€å•æ˜“è¡Œ
 */
 class EP_Rbac{
 	/*
@@ -15,13 +15,13 @@ class EP_Rbac{
 			'abc'=>'',
 		),
 	),	
-	ÓÅÏÈÊ¹ÓÃ×ÓÕıÔò£ºaction Ã»¶¨ÒåÕıÔò£¬¾ÍÊ¹ÓÃcontrollerµÄ£¬controllerÃ»¶¨Òå¾ÍÓÃÈ«¾ÖÄ¬ÈÏ¹æÔò
+	ä¼˜å…ˆä½¿ç”¨å­æ­£åˆ™ï¼šaction æ²¡å®šä¹‰æ­£åˆ™ï¼Œå°±ä½¿ç”¨controllerçš„ï¼Œcontrolleræ²¡å®šä¹‰å°±ç”¨å…¨å±€é»˜è®¤è§„åˆ™
 	*/
 	public static function identify($controllerName,$actionName){
 		$dft=E::config('rbac_default');
 		$acl=require_once(E::config('app_dir').DS.'acl.php');
 		
-		//¿ØÖÆÆ÷
+		//æ§åˆ¶å™¨
 		$ctrl=E::get($controllerName,array(),$acl);
 		$testedAclRule=E::get('rule',$dft,$ctrl);
 		//action

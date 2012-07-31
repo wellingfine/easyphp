@@ -5,7 +5,7 @@
 class EP_Route{
 	
 	
-	//´Ó path info ÖĞ»ñÈ¡ ctrlname ºÍ actname
+	//ä» path info ä¸­è·å– ctrlname å’Œ actname
 	public static function dispatch(&$ctrlName,&$actName){
 		$rules=require_once(E::config('app_dir').DS.'routes.php');
 		
@@ -13,7 +13,7 @@ class EP_Route{
 		$path_info = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : $path_info;
 		$path_info = isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : $path_info;
 		E::log('route pathinfo:'.$path_info);
-		//ºÏ²¢Ä¬ÈÏÂ·ÓÉ,µ½×îºóÒ»ĞĞ
+		//åˆå¹¶é»˜è®¤è·¯ç”±,åˆ°æœ€åä¸€è¡Œ
 		$rules[]=E::config('route_default');
 		foreach($rules as $rule){
 			$r=$rule['rule'];
