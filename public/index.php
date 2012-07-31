@@ -1,11 +1,11 @@
 <?php
-//×°ÔØÈ«¾ÖÅäÖÃ
+//è£…è½½å…¨å±€é…ç½®
 $config=require_once('../globalconfig.php');
-//¿ªÊ¼·Ö·¢ÇëÇó
+//å¼€å§‹åˆ†å‘è¯·æ±‚
 E::instance()->start(basename(__FILE__,".php"));
 
 
-print_r(' <hr><br>·Ö½çÏßbeta');
+print_r(' <hr><br>åˆ†ç•Œçº¿beta');
 ob_start();
 print_r(E::config());
 echo nl2br(htmlspecialchars(ob_get_clean()));
