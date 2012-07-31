@@ -19,7 +19,7 @@ class EP_Controller{
 
 			$suc=E::instance()->displayView($act,$this->_views);
 			if(!$suc){//view not found
-				E::log('view:'.$act.' not found');
+				E::log('view:'.$act.' not found','error');
 				E::instance()->displayView(E::config('view_not_found'));
 			}
 		}else{

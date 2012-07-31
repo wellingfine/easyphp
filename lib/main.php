@@ -116,7 +116,7 @@ class E{
 		if($this->config['rbac_enable']===true){
 			require_once($this->config['lib_dir'].DS.'core'.DS.'rbac.php');
 			if(!EP_Rbac::identify($controllerName,$actionName)){
-				E::log('no ')
+				E::log('role forbiden.login first.','error');
 				$this->displayView($this->config['rbac_failed_page']);
 				return ;
 			}
@@ -183,6 +183,7 @@ class E{
 				return true;
 			}
 		}
+		E::log('class file :'.$className.' not found.','error');
 		return false;
 		//throw new Exception('class '.$className.' not found.');
 	}

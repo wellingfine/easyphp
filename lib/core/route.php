@@ -12,7 +12,7 @@ class EP_Route{
 		$path_info = '/';
 		$path_info = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : $path_info;
 		$path_info = isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : $path_info;
-		E::log('route pathinfo:'.$path_info);
+		E::log('route pathinfo:'.$path_info,'core');
 		//合并默认路由,到最后一行
 		$rules[]=E::config('route_default');
 		foreach($rules as $rule){
