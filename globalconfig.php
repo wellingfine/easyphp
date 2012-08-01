@@ -16,12 +16,7 @@ $config=array(
 		//'core',
 	),
 	
-	/*
-		框架本身的rbac(Role Base Access Control) 只能支持单角色
-		先判deny后allow
-		如果deny为空，表示不deny任何人
-		如果allow为空，表示不allow任何人
-	*/
+
 	//权限控制 用户详细信息
 	'rbac_userSessionKey'=>'ep_rbac_user',
 	//角色
