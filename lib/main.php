@@ -72,7 +72,8 @@ class E{
 	private function autoLoad($className){
 		$ret=E::loadFile($className,array(
 			$this->config['app_dir'].DS.'model',
-			$this->config['project_dir'].DS.'modules'
+			$this->config['project_dir'].DS.'model',
+			$this->config['lib_dir'].DS.'modules',
 		));
 		if($ret==false){
 			E::log('Can\'t find class ['.$className.']! ','error');
