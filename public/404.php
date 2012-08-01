@@ -1,5 +1,5 @@
 <?php 
-//µ±³öÏÖ404Ê±£¬ÅÐ¶ÏÊÇ²»ÊÇÕæµÄ404
+//å½“å‡ºçŽ°404æ—¶ï¼Œåˆ¤æ–­æ˜¯ä¸æ˜¯çœŸçš„404
 echo '404<br>';
 echo nl2br(var_export($_SERVER,true));
 return ;
@@ -11,9 +11,9 @@ if(true){
 	echo '200<br>';
 	echo nl2br(var_export($_SERVER,true));
 	return ;
-	//×°ÔØÈ«¾ÖÅäÖÃ
+	//è£…è½½å…¨å±€é…ç½®
 	$config=require_once('../globalconfig.php');
-	//¿ªÊ¼·Ö·¢ÇëÇó
+	//å¼€å§‹åˆ†å‘è¯·æ±‚
 	E::instance()->start('index');
 */
 }else{

@@ -1,8 +1,8 @@
 <?php
 
-//×°ÔØÈ«¾ÖÅäÖÃ
+//è£…è½½å…¨å±€é…ç½®
 $config=require_once('../globalconfig.php');
-//¿ªÊ¼·Ö·¢ÇëÇó
+//å¼€å§‹åˆ†å‘è¯·æ±‚
 E::instance()->start(basename(__FILE__,".php"));
 
 

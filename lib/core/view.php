@@ -1,17 +1,17 @@
 <?php
 
 /*
- * ÊÓÍ¼Àà
- * Ê¹ÓÃ·½·¨
+ * è§†å›¾ç±»
+ * ä½¿ç”¨æ–¹æ³•
  */
 class EP_View{
-	//ÏÈ½øºó³ö
+	//å…ˆè¿›åŽå‡º
 	private $views=array();
 	
 	private $blocks=array();
 	
 	private $status;
-	private $view_dirs;//ÊÓÍ¼µÄËÑË÷Â·¾¶
+	private $view_dirs;//è§†å›¾çš„æœç´¢è·¯å¾„
 	function __construct(){
 		$this->view_dirs=array(
 			E::config('app_dir').DS.'view'.DS.E::config('controller'),
@@ -20,13 +20,13 @@ class EP_View{
 		);
 
 	}
-	//×°ÔØÒ»¸öÊÓÍ¼×é¼þ²¢ÏÔÊ¾
+	//è£…è½½ä¸€ä¸ªè§†å›¾ç»„ä»¶å¹¶æ˜¾ç¤º
 	//name without '.php'
 	private function view($name){
 		$this->views[]=array(
 			'name'=>$name,
-			'isEnd'=>false,//±ê¼ÇÊÇ·ñÒÑ¾­½áÊø µ±Ç°µÄview
-			'blocks'=>array(),//¿éÇø
+			'isEnd'=>false,//æ ‡è®°æ˜¯å¦å·²ç»ç»“æŸ å½“å‰çš„view
+			'blocks'=>array(),//å—åŒº
 		);
 	}
 	private function endView(){
@@ -41,7 +41,7 @@ class EP_View{
 	}
 	private function block($name){
 		ob_start();
-		//Ñ¹ÈëÕ»
+		//åŽ‹å…¥æ ˆ
 		$this->blocks[]=$name;
 	}
 	private function endBlock(){
@@ -51,13 +51,13 @@ class EP_View{
 		$vk=key($this->views);
 		//E::log('endBlock');
 		//E::log($this->views);
-		if($this->views[$vk]['isEnd']){//Èç¹ûÒÑ¾­½áÊøview£¬ºóÀ´Õß²»ÉúÐ§
+		if($this->views[$vk]['isEnd']){//å¦‚æžœå·²ç»ç»“æŸviewï¼ŒåŽæ¥è€…ä¸ç”Ÿæ•ˆ
 			if(isset($this->views[$vk]['blocks'][$lastName])){
 				echo $this->views[$vk]['blocks'][$lastName];
 			}else{
 				echo $html;
 			}
-		}else{//Î´½áÊøµÄ»°£¬blocksÈç¹ûÓÐÍ¬ÃûÄÇÃ´ºóÀ´ÕßÉúÐ§
+		}else{//æœªç»“æŸçš„è¯ï¼Œblockså¦‚æžœæœ‰åŒåé‚£ä¹ˆåŽæ¥è€…ç”Ÿæ•ˆ
 			$this->views[$vk]['blocks'][$lastName]=$html;
 		}
 	}	

@@ -5,7 +5,7 @@
 */
 class EP_Controller{
 	
-	//´«µÝµ½Ò³ÃæµÄ²ÎÊý
+	//ä¼ é€’åˆ°é¡µé¢çš„å‚æ•°
 	protected $_views;
 	
 	function __execute($act,$args=array()){
@@ -13,7 +13,7 @@ class EP_Controller{
 		if(method_exists($this,$actFullName)){
 			if(!$this->onBeforeExecute($act))return ;
 
-			// TODO:actionµÄ·µ»ØÖµÒªÀ´¸ÉÊ²Ã´ÄØ£¿
+			// TODO:actionçš„è¿”å›žå€¼è¦æ¥å¹²ä»€ä¹ˆå‘¢ï¼Ÿ
 			$viewArgs=call_user_func_array(array($this,$actFullName),$args);
 			$this->onAfterExecute($act);
 

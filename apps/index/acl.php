@@ -1,6 +1,6 @@
 <?php
 /*
-	Ä¬ÈÏÎªÈ«¿ª·Å
+	é»˜è®¤ä¸ºå…¨å¼€æ”¾
 */
 return array(
 	'default'=>array(
