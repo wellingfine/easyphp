@@ -33,7 +33,7 @@ $config=array(
 	//默认路由,将合并到配置路由的最后一行中
 	'route_default'=>array(
 		'rule'=>'/(.*?)/(.*?)/{0,1}',
-		'controller'=>1,
+		'controller'=>1,//如果不为数字，那么指定一个默认值
 		'action'=>2,
 		'args'=>array(),//参数
 	),

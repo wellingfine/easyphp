@@ -17,18 +17,22 @@ class EP_Route{
 		//合并默认路由,到最后一行
 		$rules[]=E::config('route_default');
 		foreach($rules as $rule){
-			$r=$rule['rule'];
-			//$rule=trim($rule,'/ ');
+			$reg=$rule['rule'];
 			// replace / to \/
-			$r='/^'.preg_replace('/\//','\\/',$r).'$/';
-			//E::log($r);
-			if(preg_match($r,$path_info,$matches)){
-				$ctrlName=E::get($rule['controller'],'',$matches);
-				$actName=E::get($rule['action'],'',$matches);
+			$reg='/^'.preg_replace('/\//','\\/',$reg).'$/';
+			//E::log($reg);
+			if(preg_match($reg,$path_info,$matches)){
+				$ctrlName=is_int( $rule['controller'] )?
+					(E::get($rule['controller'],'',$matches)):
+					$rule['controller'];
+				$actName=is_int( $rule['action'] )?
+					(E::get($rule['action'],'',$matches)):
+					$rule['action'];
+				
 				if(isset($rule['args'])){
 					//assign args to $_GET and if REQUEST isn't set assgin to it too(avoid same arg in $_POST)
-					foreach($rule['args'] as $name=>$id){
-						$_GET[$name]=E::get($id,'',$matches);
+					foreach($rule['args'] as $name=>$index){
+						$_GET[$name]=E::get($index,'',$matches);
 						if(!isset($_REQUEST[$name])){
 							$_REQUEST[$name]=$_GET[$name];
 						}
@@ -36,7 +40,6 @@ class EP_Route{
 				}
 			}
 		}
-		//E::log($_SERVER);
-		//$_GET['']
 	}
+	
 }
