@@ -156,8 +156,12 @@ class E{
 		$_SESSION[$this->config['rbac_sessionKey']]=$user;
 		$_SESSION[$this->config['rbac_roleSessionKey']]=$role;
 	}
-	public function getUser(){
-		return $this->get($this->config['rbac_sessionKey'],array(),$_SESSION);
+	public function getUser($key=''){
+		$usrinfo=$this->get($this->config['rbac_sessionKey'],array(),$_SESSION);
+		if($key!=''){
+			return $this->get($key,'',$usrinfo);
+		}
+		return $usrinfo;
 	}
 	public function getRole(){
 		return $this->get($this->config['rbac_roleSessionKey'],'',$_SESSION);
