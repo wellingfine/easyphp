@@ -4,6 +4,6 @@
  */
 return array(
 	'log_tagFilter'=>array(//标签过滤，不显示以下的标签
-		//'core',
+		'core',
 	),
 );

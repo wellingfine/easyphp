@@ -9,7 +9,7 @@
 $__starttime=microtime (true);
 
 class E{
-	private $config;//配置只读
+	private $config;//just read .
 	
 	private $logObject;
 	
@@ -19,18 +19,18 @@ class E{
 	
 	private $classPaths=array();
 	
-	
 	/*
-	初始化，不应该包含其它类的初始化
+		constructor ,ready to go . Should not contain other class's init
 	*/
 	private function __construct($config){
 		$this->config=$config;
 		
-		//开启session
+		//start and block a session first,no matter what you want ,
+		//call E::end() or session_write_close() to end a seesion
 		session_start();
-		// 禁止 magic quotes
+		// forbiden magic quotes
         @set_magic_quotes_runtime(0);
-        // 处理被 magic quotes 自动转义过的数据
+        // process the converted data ,make it back.
         if (get_magic_quotes_gpc()){
             $in = array(& $_GET, & $_POST, & $_COOKIE, & $_REQUEST);
             while (list ($k, $v) = each($in)){
@@ -44,22 +44,22 @@ class E{
             }
             unset($in);
         }
-		//自动载入
+		//register auto load function 
 		spl_autoload_register(array($this, 'autoload'));
 	}
-	//初始化框架相关的东东,在start里面调用
+	//init all about framework, called in start()
 	//configs , logs ,
 	private function initApp(){
-		//装载应用程序配置，覆盖全局配置
+		//load app config ,and overwrite globalconfig
 		$appConfig=require_once($this->config['app_dir'].DS.'config.php');
 		foreach($appConfig as $k=>$v){
 			$this->config[$k]=$v;
 		}
-		//装载所有核心类
+		//load all classes
 		require_once('classes.php');
 		
 		
-		//初始化系统日志
+		//init log
 		$this->logObject=new EP_Log(
 			$this->config['app_dir'].DS.'logs'.DS.$this->config['log_name'],$this->config['log_bufferSize'],
 			$this->config['log_maxSize'],
@@ -68,6 +68,11 @@ class E{
 		$this->logObject->setEnable($this->config['log_enable']);
 		//View
 		$this->viewObject=new EP_View();
+		
+		set_exception_handler(array($this,'exceptionHandler'));
+	}
+	private function exceptionHandler($exception){
+		E::log($exception,'error');
 	}
 	private function autoLoad($className){
 		$ret=E::loadFile($className,array(
@@ -81,16 +86,17 @@ class E{
 		}
 	}
 	
-	//开始分发请求
+	//start my app
 	/*
-		可能的错误
-		1.app不存在
-		2.controller不存在
-		3.action 不存在
+		probably error
+		1.app not found
+		2.controller  not found
+		3.action not found
+		4.view not found
 	*/
 	public function start ($appname='index'){
 		global $__starttime;
-		//设定app的目录
+		//set app dir
 		$this->config['app_dir']=$this->config['project_dir'].DS.'apps'.DS.$appname;
 		$this->config['app_name']=$appname;
 		if(!file_exists($this->config['app_dir'])){
@@ -99,7 +105,7 @@ class E{
 			$this->displayView($this->config['app_not_found']);
 			return ;
 		}
-		//确定app目录后初始化
+		//init when app_dir is set
 		$this->initApp();
 		
 		$controllerName='default';
@@ -109,7 +115,7 @@ class E{
 			require_once($this->config['lib_dir'].DS.'core'.DS.'route.php');
 			EP_Route::dispatch($controllerName,$actionName);
 		}else{
-			// 路由没开启时才用get参数
+			// use $_GET only if route is disable
 			$controllerName=E::get('controller','default');
 			$actionName=E::get('action','default');			
 		}
@@ -143,19 +149,22 @@ class E{
 			E::log('controller ['.$controller.'] is not exsit.','error');
 			$this->displayView($this->config['controller_not_found']);
 		}
-		//保证把日志输出->flush()
-		//E::log($__starttime.' used '.( microtime(true)-$__starttime ),'core')->flush(true);
+		//ensure to flush the log.
 		E::log('used '.round( microtime(true)-$__starttime,5 ).'s','core')->flush(true);
 	}
-	//显示视图
+	
+	//directly call viewObject
 	public function displayView($viewName,$args=''){
 		return $this->viewObject->render($viewName,$args);
 	}
-	//设置usr信息
+	
+	//set user and role.
+	//role is a name that you deside,but remember to write it in the app_dir/acl.php
 	public function setUser($user,$role){
 		$_SESSION[$this->config['rbac_sessionKey']]=$user;
 		$_SESSION[$this->config['rbac_roleSessionKey']]=$role;
 	}
+	//get user by key or return a usr array
 	public function getUser($key=''){
 		$usrinfo=$this->get($this->config['rbac_sessionKey'],array(),$_SESSION);
 		if($key!=''){
@@ -166,7 +175,11 @@ class E{
 	public function getRole(){
 		return $this->get($this->config['rbac_roleSessionKey'],'',$_SESSION);
 	}
-//-------------------------静态方法分隔线
+//-------------------------static function below.
+	public static function db(){
+		
+		return new 
+	}
 	//end up session block ,so next session can go on.
 	public static function end(){
 		session_write_close();
@@ -206,7 +219,8 @@ class E{
 		}
 	}
 	/*
-	 * 获取数组的值
+	 * get array's value by key 
+	 * default to use $_GET
 	 */
 	public static function get($key,$default='',$arr=null){
 		if($arr==null){
