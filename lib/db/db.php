@@ -9,15 +9,12 @@ class EP_DB{
 	private $_charset;
 	
 	/*
-		array=> config
-		string=> dsn
+		
 	*/
-	public function EP_DB($config,$charset='utf8'){
-		if(is_array($config)){
-			$this->setConfig($config);
-		}else{
-			$this->setDsn($config,$charset);
-		}
+	public function EP_DB($conn,$user='',$password='',$persist=true){
+		
+		$this->setConfig($conn,$persist);
+
 		if($this->_pdo==null){
 			throw new Exception('DB Connection error.');
 			return ;
@@ -27,16 +24,16 @@ class EP_DB{
 	
 	// specify a dsn 
 	private function setDsn($dsn,$charset='utf8'){
-		$this->_pdo=new PDO($dsn);
+		$this->_pdo=new PDO($dsn,'','',);
 		$this->_charset=$charset;
 	}
 	//config array
-	private function setConfig($config){
+	private function setConfig($config,$persist=true){
 		$dft=array(
 			'driver'=>'mysql',//
 			'host'=>'localhost',//
-			'database'=>'',//
-			'login'=>'',//
+			'dbname'=>'',//
+			'user'=>'',//
 			'password'=>'',//
 			'charset'=>'utf8',
 			'port'=>'3306',//
@@ -46,16 +43,26 @@ class EP_DB{
 		
 		$this->_charset=$charset;
 		
+		$driver=strtolower($driver);
 		switch($driver){
 			//sqlite is special.
 			case 'sqlite':
 				//$host is a full path filename
-				$this->_pdo=new PDO("sqlite:$host");
-			
+				$dsn="sqlite:$host";
+				break;
+			case 'odbc':
+				$dsn="";
+				break;
 			//TODO:some other db is the same as mysql?
+			//PGSQL,MYSQL,cubrid,
 			default :
-				$this->_pdo=new PDO("$driver:host=$host;dbname=$database;port=$port", $login, $password);
+				$dsn="$driver:host=$host;dbname=$dbname;port=$port";
+				break;
 		}
+		$this->_pdo=new PDO($dsn, $user, $password,array(
+			PDO::ATTR_PERSISTENT=>$persist,
+		));
+		
 	}
 	
 	private function init(){
@@ -69,5 +76,6 @@ class EP_DB{
 		$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES,true);
 		//
 		$this->_pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC);
+		
 	}
 }
