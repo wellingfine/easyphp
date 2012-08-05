@@ -12,7 +12,7 @@ class EP_DB{
 		array=> config
 		string=> dsn
 	*/
-	public function EP_DB($config=null,$charset='utf8'){
+	public function EP_DB($config,$charset='utf8'){
 		if(is_array($config)){
 			$this->setConfig($config);
 		}else{
@@ -22,6 +22,7 @@ class EP_DB{
 			throw new Exception('DB Connection error.');
 			return ;
 		}
+		$this->init();
 	}
 	
 	// specify a dsn 
@@ -29,6 +30,7 @@ class EP_DB{
 		$this->_pdo=new PDO($dsn);
 		$this->_charset=$charset;
 	}
+	//config array
 	private function setConfig($config){
 		$dft=array(
 			'driver'=>'mysql',//
@@ -56,7 +58,16 @@ class EP_DB{
 		}
 	}
 	
-	function init(){
-		
+	private function init(){
+		//leave column names to origin case. 
+		$this->_pdo->setAttribute(PDO::ATTR_CASE,PDO::CASE_NATURAL);
+		//if occur error then throw exception
+		$this->_pdo->setAttribute(PDO::ATTR_ERRMODE,PDO::ERRMODE_EXCEPTION);
+		//Convert numeric values to strings when fetching
+		$this->_pdo->setAttribute(PDO::ATTR_STRINGIFY_FETCHES,false);
+		//ATTR_EMULATE_PREPARES ,always use prepare statment
+		$this->_pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES,true);
+		//
+		$this->_pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC);
 	}
 }
