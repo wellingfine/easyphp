@@ -76,5 +76,21 @@ class EP_DB{
 		$this->_pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC);
 		
 	}
+	
+	function binds(){
+		
+	}
+	function update($kv,$where){
+		
+	}
+	function select(){
+		
+	}
+	function delete(){
+		
+	}
+	function insert(){
+		
+	}
 }
 

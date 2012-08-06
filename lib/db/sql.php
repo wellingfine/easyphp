@@ -3,9 +3,10 @@
 	construct sql
  */
 class EP_SQL{
-	
-	public function __construct(){
-		
+	private $db=null;
+	public function __construct($db){
+		$this->db=$db;
 	}
+	
 }
 
