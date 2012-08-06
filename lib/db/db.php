@@ -9,12 +9,10 @@ class EP_DB{
 	private $_charset;
 	
 	/*
-		
+		if driver is manual ,assign a dsn to host so that EP_DB can directly construct a pdo by dsn.
 	*/
-	public function EP_DB($conn,$user='',$password='',$persist=true){
-		
-		$this->setConfig($conn,$persist);
-
+	public function __construct($conn){
+		$this->setConfig($conn);
 		if($this->_pdo==null){
 			throw new Exception('DB Connection error.');
 			return ;
@@ -22,21 +20,17 @@ class EP_DB{
 		$this->init();
 	}
 	
-	// specify a dsn 
-	private function setDsn($dsn,$charset='utf8'){
-		$this->_pdo=new PDO($dsn,'','',);
-		$this->_charset=$charset;
-	}
 	//config array
-	private function setConfig($config,$persist=true){
+	private function setConfig($config){
 		$dft=array(
 			'driver'=>'mysql',//
-			'host'=>'localhost',//
+			'host'=>'',//
 			'dbname'=>'',//
 			'user'=>'',//
 			'password'=>'',//
 			'charset'=>'utf8',
 			'port'=>'3306',//
+			'persist'=>true
 		);
 		extract($dft);
 		extract($config,EXTR_OVERWRITE);
@@ -45,12 +39,16 @@ class EP_DB{
 		
 		$driver=strtolower($driver);
 		switch($driver){
+			//if driver is manual then use host for dsn.
+			case 'manual':
+				$dsn=$host;
+				break;
 			//sqlite is special.
 			case 'sqlite':
 				//$host is a full path filename
 				$dsn="sqlite:$host";
 				break;
-			case 'odbc':
+			case 'odbc'://TODO:
 				$dsn="";
 				break;
 			//TODO:some other db is the same as mysql?
@@ -64,7 +62,7 @@ class EP_DB{
 		));
 		
 	}
-	
+	//init pdo's attribute
 	private function init(){
 		//leave column names to origin case. 
 		$this->_pdo->setAttribute(PDO::ATTR_CASE,PDO::CASE_NATURAL);
@@ -79,3 +77,4 @@ class EP_DB{
 		
 	}
 }
+
