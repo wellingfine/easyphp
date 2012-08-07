@@ -13,23 +13,36 @@ class EP_Controller{
 		if(method_exists($this,$actFullName)){
 			if(!$this->onBeforeExecute($act))return ;
 
-			// TODO:action的返回值要来干什么呢？
-			$viewArgs=call_user_func_array(array($this,$actFullName),$args);
-			$this->onAfterExecute($act);
-
-			$suc=E::instance()->displayView($act,$this->_views);
-			if(!$suc){//view not found
-				E::log('view:'.$act.' not found','warning');
-				E::instance()->displayView(E::config('view_not_found'));
+			$ret=call_user_func_array(array($this,$actFullName),$args);
+			$this->onAfterExecute($act,$ret);
+			
+			if($ret!==null){
+				//array is suppose to output ajax request
+				if(is_array($ret)){
+					echo json_encode($ret);
+				}else{ //string or something .echo it!
+					echo $ret;
+				}				
+			}else{// ret===null ,means default 
+				//manually set null ,don't render view.
+				if($this->_views!=null){
+					$suc=E::instance()->displayView($act,$this->_views);
+					if(!$suc){//view not found
+						E::log('view:'.$act.' not found','warning');
+						E::instance()->displayView(E::config('view_not_found'));
+					}
+				}
 			}
 		}else{
 			$this->onActionUndefined($act);
 		}
 	}
+	//
 	protected function onBeforeExecute($actionName){
 		return true;
 	}
-	protected function onAfterExecute($actionName){
+	//
+	protected function onAfterExecute($actionName,$ret){
 		return true;
 	}
 	protected function onActionUndefined($actionName){
