@@ -178,7 +178,7 @@ class E{
 //-------------------------static function below.
 	public static function db(){
 		
-		return new 
+		//return new 
 	}
 	//end up session block ,so next session can go on.
 	public static function end(){
