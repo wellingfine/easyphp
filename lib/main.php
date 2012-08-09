@@ -19,6 +19,10 @@ class E{
 	
 	private $classPaths=array();
 	
+	//store used models 
+	//we can use this way to avoid creating static Model class,make your code more clean ,but do the same thing.
+	//notice!: a standar model's constructor must be no args,or has default value
+	private $_models=array();
 	/*
 		constructor ,ready to go . Should not contain other class's init
 	*/
@@ -223,6 +227,17 @@ class E{
 		}else{
 			return isset(self::$instance->config[$item])?self::$instance->config[$item]:'';
 		}
+	}
+	//create a model and store to $_models
+	//a model should be 
+	public static function m($modelName){
+		$inst=self::$instance;
+		if(isset($inst->_models[$modelName]) ){
+			return $inst->_models[$modelName];
+		}
+		$modelObject=new $modelName();
+		$inst->_models[$modelName]=$modelObject;
+		return $modelObject;
 	}
 	/*
 	 * get array's value by key 

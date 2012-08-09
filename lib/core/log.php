@@ -60,7 +60,9 @@ class EP_Log{
 	function flush($check=false){
 		//
 		$fp = fopen($this->file, 'a');
+		//echo implode("<br>",$this->log)."<br>";
 		if ($fp && flock($fp, LOCK_EX)){
+
 			$r=fwrite($fp, implode("\n",$this->log)."\n");
 			//print_r(implode("\r\n",$this->log));
 			flock($fp, LOCK_UN);
