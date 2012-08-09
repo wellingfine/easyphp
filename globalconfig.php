@@ -56,7 +56,7 @@ $config=array(
 
 );
 
-//装载框架主类
+//load main entrance
 require_once($config['lib_dir'].DS.'main.php');
-//初始化主类
+//instance main object E
 E::instance($config);

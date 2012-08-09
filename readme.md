@@ -1,9 +1,9 @@
-edit by welling
-2012-06-14
 
-1.framework code only goes in lib/ ,easy to upgrade if new version is published.
-2.config file is small and nothing to do with other app.
-3.in public/ a PHP file is an app if it create an E object ,it takes the requests and dispatches to specify controller in apps/
+HOME
+
+1. framework code only goes in lib/ ,easy to upgrade if new version is published.
+2. config file is small and nothing to do with other app.
+3. in public/ a PHP file is an app if it create an E object ,it takes the requests and dispatches to specify controller in apps/
 
 ./
 	+apps

@@ -64,7 +64,7 @@ class EP_View{
 	//search view with name
 	//$name:a full path name or view's name without '.php'
 	//return true if found else return false
-	function render($name,$args=''){
+	function render($name,$args=null,$manual_dir=''){
 		//empty means kiding :)
 		if($name=='')return true;
 		if(is_array($args)){
@@ -74,8 +74,14 @@ class EP_View{
 			require($name);
 			return true;
 		}else{
-			foreach($this->view_dirs as $d){
-				$d=$d.DS.$name.'.php';
+			if(!empty($manual_dir)){
+
+				array_unshift($this->view_dirs,$manual_dir);
+			}
+			$len=count($this->view_dirs);
+			for($i=0;$i<$len;$i++){
+
+				$d=$this->view_dirs[$i].DS.$name.'.php';
 				if(file_exists($d)){
 					require($d);
 					return true;

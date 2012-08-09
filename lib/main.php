@@ -154,8 +154,8 @@ class E{
 	}
 	
 	//directly call viewObject
-	public function displayView($viewName,$args=''){
-		return $this->viewObject->render($viewName,$args);
+	public function displayView($viewName,$args=null,$manual_dir=''){
+		return $this->viewObject->render($viewName,$args,$manual_dir='');
 	}
 	
 	//set user and role.
