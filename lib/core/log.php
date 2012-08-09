@@ -61,7 +61,7 @@ class EP_Log{
 		//
 		$fp = fopen($this->file, 'a');
 		if ($fp && flock($fp, LOCK_EX)){
-			fwrite($fp, implode("\n",$this->log)."\n");
+			$r=fwrite($fp, implode("\n",$this->log)."\n");
 			//print_r(implode("\r\n",$this->log));
 			flock($fp, LOCK_UN);
 			fclose($fp);

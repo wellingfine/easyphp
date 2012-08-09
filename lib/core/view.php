@@ -11,14 +11,11 @@ class EP_View{
 	private $blocks=array();
 	
 	private $status;
-	private $view_dirs;//视图的搜索路径
-	function __construct(){
-		$this->view_dirs=array(
-			E::config('app_dir').DS.'view'.DS.E::config('controller'),
-			E::config('app_dir').DS.'view',
-			E::config('project_dir').DS.'view',
-		);
-
+	private $view_dirs=array();//视图的搜索路径
+	function __construct($dirs=null){
+		if(is_array($dirs)){
+			$this->view_dirs=$dirs;
+		}
 	}
 	//装载一个视图组件并显示
 	//name without '.php'
@@ -75,12 +72,10 @@ class EP_View{
 			return true;
 		}else{
 			if(!empty($manual_dir)){
-
 				array_unshift($this->view_dirs,$manual_dir);
 			}
 			$len=count($this->view_dirs);
 			for($i=0;$i<$len;$i++){
-
 				$d=$this->view_dirs[$i].DS.$name.'.php';
 				if(file_exists($d)){
 					require($d);

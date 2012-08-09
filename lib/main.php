@@ -66,9 +66,7 @@ class E{
 			$this->config['log_tagFilter']
 		);
 		$this->logObject->setEnable($this->config['log_enable']);
-		//View
-		$this->viewObject=new EP_View();
-		
+
 		set_exception_handler(array($this,'exceptionHandler'));
 	}
 	private function exceptionHandler($exception){
@@ -139,7 +137,15 @@ class E{
 		
 		//装载controller
 		$this->loadFile($controller,$this->config['app_dir'].DS.'controller');
-		
+		//View
+		$this->viewObject=new EP_View(
+			array(
+				$this->config['app_dir'].DS.'view'.DS.$controllerName,
+				$this->config['app_dir'].DS.'view',
+				$this->config['project_dir'].DS.'view',
+			)
+		);
+
 		if(class_exists($controller,false)
 		//||interface_exists($controller)
 			){
@@ -155,7 +161,7 @@ class E{
 	
 	//directly call viewObject
 	public function displayView($viewName,$args=null,$manual_dir=''){
-		return $this->viewObject->render($viewName,$args,$manual_dir='');
+		return $this->viewObject->render($viewName,$args,$manual_dir);
 	}
 	
 	//set user and role.
