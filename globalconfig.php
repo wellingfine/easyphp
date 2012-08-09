@@ -38,8 +38,8 @@ $config=array(
 		'args'=>array(),//参数
 	),
 	
-	//404自定义页面,有四种not found
-	//if empty then ignore,and only can see what happen in log.
+	//four types of NotFound
+	//if empty then ignore,but you can see what happen in log.
 	'app_not_found'=>'404',
 	'controller_not_found'=>'404',
 	'action_not_found'=>'404',
