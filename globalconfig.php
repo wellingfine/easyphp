@@ -24,9 +24,9 @@ $config=array(
 	//是否启用 rbac
 	'rbac_enable'=>true,
 	//默认权限:all 
-	'rbac_default'=>'.*',
-	//身份认证失败页面
-	'rbac_failed_page'=>'',
+	'rbac_default'=>'.*?',
+	//身份认证失败页面,jump to login url
+	'rbac_failed_url'=>'/sys/user/login',
 	
 	//route engine
 	'route_enable'=>true,

@@ -71,10 +71,14 @@ class E{
 		);
 		$this->logObject->setEnable($this->config['log_enable']);
 
+		$this->viewObject=new EP_View();
+		$this->viewObject->importDir($this->config['project_dir'].DS.'view');
+
 		set_exception_handler(array($this,'exceptionHandler'));
+		//set_error_handler(array($this,'exceptionHandler'));
 	}
-	private function exceptionHandler($exception){
-		E::log($exception,'error');
+	public function exceptionHandler($e){
+		E::log('Exception:'.$e->getMessage().' file:'.$e->getFile().' line:'.$e->getLine(),'error')->flush();
 	}
 	private function autoLoad($className){
 		$ret=E::loadFile($className,array(
@@ -82,10 +86,6 @@ class E{
 			$this->config['project_dir'].DS.'model',
 			$this->config['lib_dir'].DS.'modules',
 		));
-		if($ret==false){
-			E::log('Can\'t find class ['.$className.']! ','error');
-			
-		}
 	}
 	
 	//start my app
@@ -103,13 +103,15 @@ class E{
 		$this->config['app_name']=$appname;
 		if(!file_exists($this->config['app_dir'])){
 			//app not found
+			//TODO: viewObject not init 
 			E::log('app ['.$appname.'] is not exsit.');
 			$this->displayView($this->config['app_not_found']);
 			return ;
 		}
+		
 		//init when app_dir is set
 		$this->initApp();
-		
+		$this->viewObject->importDir($this->config['app_dir'].DS.'view');
 		$controllerName='default';
 		$actionName='default';
 		//url rewrite
@@ -124,9 +126,11 @@ class E{
 		//Role Base Access Control start
 		if($this->config['rbac_enable']===true){
 			require_once($this->config['lib_dir'].DS.'core'.DS.'rbac.php');
+			
 			if(!EP_Rbac::identify($controllerName,$actionName)){
-				E::log('role forbiden.login first.','error');
-				$this->displayView($this->config['rbac_failed_page']);
+				E::log('Access deny :role forbiden. Please login first.','error');
+				//$this->displayView($this->config['rbac_failed_page']);
+				header('Location: '.$this->config['rbac_failed_url']);
 				return ;
 			}
 		}
@@ -141,14 +145,9 @@ class E{
 		
 		//装载controller
 		$this->loadFile($controller,$this->config['app_dir'].DS.'controller');
+
 		//View
-		$this->viewObject=new EP_View(
-			array(
-				$this->config['app_dir'].DS.'view'.DS.$controllerName,
-				$this->config['app_dir'].DS.'view',
-				$this->config['project_dir'].DS.'view',
-			)
-		);
+		$this->viewObject->importDir($this->config['app_dir'].DS.'view'.DS.$controllerName);
 
 		if(class_exists($controller,false)
 		//||interface_exists($controller)
@@ -211,7 +210,7 @@ class E{
 				return true;
 			}
 		}
-		E::log('class file :'.$className.' not found.','error');
+		E::log('class file :'.$className.' not found.','error')->flush();
 		return false;
 		//throw new Exception('class '.$className.' not found.');
 	}

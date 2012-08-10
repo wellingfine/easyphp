@@ -17,6 +17,13 @@ class EP_View{
 			$this->view_dirs=$dirs;
 		}
 	}
+	public function importDir($dir,$first=true){
+		if($first){
+			array_unshift($this->view_dirs, $dir);
+		}else{
+			$this->view_dirs[]=$dir;
+		}
+	}
 	//装载一个视图组件并显示
 	//name without '.php'
 	private function view($name){
