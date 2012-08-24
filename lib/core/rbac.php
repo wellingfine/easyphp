@@ -19,7 +19,7 @@ class EP_Rbac{
 	*/
 	public static function identify($controllerName,$actionName){
 		$dft=E::config('rbac_default');
-		$acl=require_once(E::config('app_dir').DS.'acl.php');
+		$acl=require_once(E::config('app_path').'acl.php');
 		
 		//控制器
 		$ctrl=E::get($controllerName,array(),$acl);

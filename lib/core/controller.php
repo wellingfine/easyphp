@@ -16,23 +16,22 @@ class EP_Controller{
 			$ret=call_user_func_array(array($this,$actFullName),$args);
 			$this->onAfterExecute($act,$ret);
 
-			if($ret===null){// ret===null=> ret=null or return; ,means default 
-				//manually set null ,don't render view.
-				if($this->_views!==null){
-					$suc=E::instance()->displayView($act,$this->_views);
-					if(!$suc){//view not found
-						E::log('view:'.$act.' not found','warning');
-						E::instance()->displayView(E::config('view_not_found'));
-					}
+			//if return nothing then display view;
+			if($ret===null){ // return ; return null;
+				$suc=E::instance()->displayView($act,$this->_views);
+				if(!$suc){//view not found
+					E::log('view:'.$act.' not found','warning');
+					E::instance()->displayView(E::config('view_not_found'));
 				}
-			}else{
-				//array is suppose to output ajax request
-				if(is_array($ret)){
-					echo json_encode($ret);
-				}else{ //string or something .echo it!
-					echo $ret;
-				}
+				return ;
 			}
+			if(is_array($ret)){
+				//array is suppose to output ajax request
+				echo json_encode($ret);
+			}else {//string or something .echo it!
+				echo $ret;
+			}	
+			
 		}else{
 			$this->onActionUndefined($act);
 		}

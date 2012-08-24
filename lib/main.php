@@ -54,37 +54,42 @@ class E{
 	//init all about framework, called in start()
 	//configs , logs ,
 	private function initApp(){
+		$appPath=$this->config['app_path'];
 		//load app config ,and overwrite globalconfig
-		$appConfig=require_once($this->config['app_dir'].DS.'config.php');
+		$appConfig=require_once($appPath.'config.php');
 		foreach($appConfig as $k=>$v){
 			$this->config[$k]=$v;
 		}
+		$this->config['db_config']= require_once($appPath.'db.php');
 		//load all classes
 		require_once('classes.php');
 		
 		
 		//init log
 		$this->logObject=new EP_Log(
-			$this->config['app_dir'].DS.'logs'.DS.$this->config['log_name'],$this->config['log_bufferSize'],
+			$appPath.'logs'.DS.$this->config['log_name'],$this->config['log_bufferSize'],
 			$this->config['log_maxSize'],
 			$this->config['log_tagFilter']
 		);
 		$this->logObject->setEnable($this->config['log_enable']);
 
 		$this->viewObject=new EP_View();
-		$this->viewObject->importDir($this->config['project_dir'].DS.'view');
+		$this->viewObject->importDir($this->config['project_path'].'view');
 
-		set_exception_handler(array($this,'exceptionHandler'));
-		//set_error_handler(array($this,'exceptionHandler'));
+		set_exception_handler(array($this,'_exceptionHandler'));
+		set_error_handler(array($this,'_errorHandler'));
 	}
-	public function exceptionHandler($e){
-		E::log('Exception:'.$e->getMessage().' file:'.$e->getFile().' line:'.$e->getLine(),'error')->flush();
+	public function _errorHandler ( $errno ,$errstr , $errfile ,$errline){
+		E::log('E:Error=>'.$errno.' file:'.$errfile.' line:'.$errline,'error')->flush();
+	}
+	public function _exceptionHandler($e){
+		E::log('E:Exception=>'.$e->getMessage().' file:'.$e->getFile().' line:'.$e->getLine(),'error')->flush();
 	}
 	private function autoLoad($className){
 		$ret=E::loadFile($className,array(
-			$this->config['app_dir'].DS.'model',
-			$this->config['project_dir'].DS.'model',
-			$this->config['lib_dir'].DS.'modules',
+			$this->config['app_path'].'model',
+			$this->config['project_path'].'model',
+			$this->config['lib_path'].'modules',
 		));
 	}
 	
@@ -98,10 +103,10 @@ class E{
 	*/
 	public function start ($appname='index'){
 		global $__starttime;
-		//set app dir
-		$this->config['app_dir']=$this->config['project_dir'].DS.'apps'.DS.$appname;
+		//set app path
+		$this->config['app_path']=$this->config['project_path'].'apps'.DS.$appname.DS;
 		$this->config['app_name']=$appname;
-		if(!file_exists($this->config['app_dir'])){
+		if(!file_exists($this->config['app_path'])){
 			//app not found
 			//TODO: viewObject not init 
 			E::log('app ['.$appname.'] is not exsit.');
@@ -111,26 +116,27 @@ class E{
 		
 		//init when app_dir is set
 		$this->initApp();
-		$this->viewObject->importDir($this->config['app_dir'].DS.'view');
+		$this->viewObject->importDir($this->config['app_path'].'view');
 		$controllerName='default';
 		$actionName='default';
 		//url rewrite
 		if($this->config['route_enable']===true){
-			require_once($this->config['lib_dir'].DS.'core'.DS.'route.php');
+			require_once($this->config['lib_path'].'core'.DS.'route.php');
 			EP_Route::dispatch($controllerName,$actionName);
 		}else{
 			// use $_GET only if route is disable
 			$controllerName=E::get('controller','default');
-			$actionName=E::get('action','default');			
+			$actionName=E::get('action','default');
 		}
 		//Role Base Access Control start
 		if($this->config['rbac_enable']===true){
-			require_once($this->config['lib_dir'].DS.'core'.DS.'rbac.php');
+			require_once($this->config['lib_path'].'core'.DS.'rbac.php');
 			
 			if(!EP_Rbac::identify($controllerName,$actionName)){
 				E::log('Access deny :role forbiden. Please login first.','error');
-				//$this->displayView($this->config['rbac_failed_page']);
-				header('Location: '.$this->config['rbac_failed_url']);
+				$this->displayView($this->config['rbac_failed_page'],array(
+					'url'=>E::get('REQUEST_URI','/',$_SERVER)
+				));
 				return ;
 			}
 		}
@@ -144,10 +150,10 @@ class E{
 		$controller=$controllerName.'_controller';
 		
 		//装载controller
-		$this->loadFile($controller,$this->config['app_dir'].DS.'controller');
+		$this->loadFile($controller,$this->config['app_path'].'controller');
 
 		//View
-		$this->viewObject->importDir($this->config['app_dir'].DS.'view'.DS.$controllerName);
+		$this->viewObject->importDir($this->config['app_path'].'view'.DS.$controllerName);
 
 		if(class_exists($controller,false)
 		//||interface_exists($controller)
@@ -169,13 +175,13 @@ class E{
 	
 	//set user and role.
 	//role is a name that you deside,but remember to write it in the app_dir/acl.php
-	public function setUser($user,$role){
-		$_SESSION[$this->config['rbac_sessionKey']]=$user;
+	public function setUser($user,$role=''){
+		$_SESSION[$this->config['rbac_userSessionKey']]=$user;
 		$_SESSION[$this->config['rbac_roleSessionKey']]=$role;
 	}
 	//get user by key or return a usr array
 	public function getUser($key=''){
-		$usrinfo=$this->get($this->config['rbac_sessionKey'],array(),$_SESSION);
+		$usrinfo=$this->get($this->config['rbac_userSessionKey'],array(),$_SESSION);
 		if($key!=''){
 			return $this->get($key,'',$usrinfo);
 		}
@@ -185,10 +191,46 @@ class E{
 		return $this->get($this->config['rbac_roleSessionKey'],'',$_SESSION);
 	}
 //-------------------------static function below.
-	public static function db(){
-		
+	//get database connector
+	public static function d($dsn){
+		if(!is_array($dsn)){
+			$dbConfig=E::config('db_config');
+			if(!is_array($dbConfig)){
+				throw new Exception('DB Config format error!');
+			}
+			$dsn=E::get($dsn,array(),$dbConfig);
+		}
+		return new EP_DB($dsn);
 		//return new 
 	}
+	// get table instance
+	public static function t($dsn,$tableName){
+		//
+		return new EP_Table(E::d($dsn),$tableName);
+	}
+	//3 ways to go :
+	//$className get an exist model by nickName
+	//$className 
+	/*
+	public static function mm($className,$nickName,$args){
+
+	}*/
+	//create a model and store to $_models
+	//a model's constructor should be no args.
+	public static function m($modelName){
+		$inst=self::$instance;
+		if(isset($inst->_models[$modelName]) ){
+			return $inst->_models[$modelName];
+		}
+		try{
+		$modelObject=new $modelName();
+		}catch(Exception $e){
+			E::log($e)->flush();
+		}
+		$inst->_models[$modelName]=$modelObject;
+		return $modelObject;
+	}
+
 	//end up session block ,so next session can go on.
 	public static function end(){
 		session_write_close();
@@ -227,17 +269,6 @@ class E{
 			return isset(self::$instance->config[$item])?self::$instance->config[$item]:'';
 		}
 	}
-	//create a model and store to $_models
-	//a model should be 
-	public static function m($modelName){
-		$inst=self::$instance;
-		if(isset($inst->_models[$modelName]) ){
-			return $inst->_models[$modelName];
-		}
-		$modelObject=new $modelName();
-		$inst->_models[$modelName]=$modelObject;
-		return $modelObject;
-	}
 	/*
 	 * get array's value by key 
 	 * default to use $_GET
@@ -247,6 +278,9 @@ class E{
 			$arr=$_GET;
 		}
 		return isset($arr[$key])?$arr[$key]:$default;
+	}
+	public static function post($key,$default=''){
+		return isset($_POST[$key])?$_POST[$key]:$default;
 	}
 }
 
