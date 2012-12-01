@@ -19,38 +19,6 @@ abstract class EP_Controller{
 
 			$ret=call_user_func_array(array($this,$actFullName),$args);
 			$this->onAfterExecute($act,$ret);
-
-			if($this->_json==null){// 
-				$suc=E::i()->displayView($act,$this->_views);
-				if(!$suc){//view not found
-					E::log('view:'.$act.' not found','warning');
-					E::i()->displayView(E::config('view_not_found'));
-				}
-			}else{
-
-				if(is_string($this->_json)){
-					echo $this->_json;
-				}else{
-					echo json_encode($this->_json);
-				}
-			}
-/*
-			//if return nothing then display view;
-			if($ret===null){ // return ; return null;
-				$suc=E::i()->displayView($act,$this->_views);
-				if(!$suc){//view not found
-					E::log('view:'.$act.' not found','warning');
-					E::instance()->displayView(E::config('view_not_found'));
-				}
-				return ;
-			}
-			if(is_array($ret)){
-				//array is suppose to output ajax request
-				echo json_encode($ret);
-			}else {//string or something .echo it!
-				echo $ret;
-			}	
-			*/
 		}else{
 			$this->onActionUndefined($act);
 		}

@@ -24,9 +24,7 @@ $config=array(
 	//是否启用 rbac
 	'rbac_enable'=>true,
 	//默认权限:all 
-	'rbac_default'=>'.*?',
-	//身份认证失败页面,jump to view
-	'rbac_failed_page'=>'403',
+	'rbac_failed_page'=>'',
 	
 	//route engine
 	'route_enable'=>true,

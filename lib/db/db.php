@@ -2,7 +2,7 @@
 /*
 Only when a sql is ready to execute ,a PDO will be create .
 notice:
-1.æ•°æ®è¡¨åä¸èƒ½å«æœ‰"." ,è§ normalTableName();
+1.Êı¾İ±íÃû²»ÄÜº¬ÓĞ"." ,¼û normalTableName();
 
  */
 class EP_DB{
@@ -10,7 +10,6 @@ class EP_DB{
 	protected $_pdo=null;
 	//execute "set names $_charset;" before any sql;
 	protected $_charset;
-	
 	protected $_config=null;
 
 	protected $isConnect=false;
@@ -32,7 +31,7 @@ class EP_DB{
 		$this->_config=$conn;
 		$this->init();
 	}
-	
+
 	//to get a  EP_Table object 
 	//TODO: Do tables need cache?
 	public function t($tableName){
@@ -55,8 +54,8 @@ class EP_DB{
 		$port='3306';
 		$persist=true;
 
-		extract($this->_config,EXTR_OVERWRITE);
-		
+		extract($this->_config,EXTR_OVERWRITE);	
+
 		$this->_charset=$charset;
 		
 		$driver=strtolower($driver);

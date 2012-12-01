@@ -1,4 +1,7 @@
 <?php 
+header('Location: /sys'.$_SERVER['REQUEST_URI']);
+return ;
+
 //当出现404时，判断是不是真的404
 echo '404<br>';
 echo nl2br(var_export($_SERVER,true));
