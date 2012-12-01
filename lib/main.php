@@ -134,7 +134,7 @@ class E{
 		//Role Base Access Control start
 		if(self::$config['rbac_enable']===true){
 			require(self::$config['lib_path'].'core'.DS.'rbac.php');
-
+			
 			if(!EP_Rbac::identify($controllerName,$actionName)){
 				E::log('Access deny :role forbiden. Please login first.','error');
 				$this->displayView(self::$config['rbac_failed_page'],array(
@@ -176,6 +176,7 @@ class E{
 		return $this->viewObject->render($viewName,$args,$manual_dir);
 	}
 	
+	
 //-------------------------static function below.
 	//set user(mixed) and role(string).
 	//role is a name that you deside,but remember to write it in the app_dir/acl.php
@@ -186,7 +187,6 @@ class E{
 	//get user by key or return a usr array
 	public static function getUser($key=''){
 		$usrinfo=self::get(self::$config['rbac_userSessionKey'],array(),$_SESSION);
-
 		if($key!=''){
 			return self::get($key,'',$usrinfo);
 		}
@@ -195,6 +195,7 @@ class E{
 	public static function getRole(){
 		return self::get(self::$config['rbac_roleSessionKey'],'',$_SESSION);
 	}
+
 	public static function i(){
 		return self::$instance;
 	}
@@ -301,7 +302,9 @@ class E{
 			self::$instance= new E($config);
 		}
 	}
-	/*	 * get array's value by key 
+
+	/*
+	 * get array's value by key 
 	 * default to use $_GET
 	 */
 	public static function get($key,$default='',$arr=null){
@@ -316,6 +319,7 @@ class E{
 	public static function request($key,$default=''){
 		return isset($_REQUEST[$key])?$_REQUEST[$key]:$default;
 	}
+	
 }
 
 ?>

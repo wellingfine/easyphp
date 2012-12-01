@@ -20,7 +20,7 @@ class EP_Rbac{
 	public static function identify($controllerName,$actionName){
 		$dft=E::c('rbac_default');
 		$acl=require_once(E::c('app_path').'acl.php');
-
+		
 		//控制器
 		$ctrl=E::get($controllerName,array(),$acl);
 		$testedAclRule=E::get('rule',$dft,$ctrl);
