@@ -24,9 +24,9 @@ $config=array(
 	//是否启用 rbac
 	'rbac_enable'=>true,
 	//默认权限:all 
-	'rbac_default'=>'.*',
-	//身份认证失败页面
-	'rbac_failed_page'=>'',
+	'rbac_default'=>'.*?',
+	//身份认证失败页面,jump to view
+	'rbac_failed_page'=>'403',
 	
 	//route engine
 	'route_enable'=>true,
@@ -48,15 +48,16 @@ $config=array(
 	//
 	'charset'=>'utf-8',
 	//以下请勿覆盖-------
-	
+	//when needed ,framework will load dbconfig(db.php) to cover this value even defined in subconfig, 
+	'db_config'=>null,
 	//框架目录,默认是在项目目录的lib里面,如有需要可以更改
-	'lib_dir'=>dirname(__FILE__).DS.'lib',
+	'lib_path'=>dirname(__FILE__).DS.'lib'.DS,
 	//项目目录,和 globalconfig.php 在同一个目录
-	'project_dir'=>dirname(__FILE__),
+	'project_path'=>dirname(__FILE__).DS,
 
 );
 
 //load main entrance
-require_once($config['lib_dir'].DS.'main.php');
-//instance main object E
-E::instance($config);
+require_once($config['lib_path'].'main.php');
+//create main object E
+E::createMe($config);

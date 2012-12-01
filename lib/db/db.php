@@ -1,39 +1,61 @@
 <?php
 /*
-	
+Only when a sql is ready to execute ,a PDO will be create .
+notice:
+1.数据表名不能含有"." ,见 normalTableName();
+
  */
 class EP_DB{
 	//pdo object
-	private $_pdo=null;
+	protected $_pdo=null;
+	//execute "set names $_charset;" before any sql;
+	protected $_charset;
 	
-	private $_charset;
-	
+	protected $_config=null;
+
+	protected $isConnect=false;
+
+	protected $isInit=false;
+
+	protected $columns=array();
+
+	//cache all prepared statment.
+	protected $prepareStatments=array(); 
+
+	//table caches
+	private $_t_cache=array();
 	/*
 		if driver is manual ,assign a dsn to host so that EP_DB can directly construct a pdo by dsn.
+		$conn:array
 	*/
 	public function __construct($conn){
-		$this->setConfig($conn);
-		if($this->_pdo==null){
-			throw new Exception('DB Connection error.');
-			return ;
-		}
+		$this->_config=$conn;
 		$this->init();
 	}
 	
-	//config array
-	private function setConfig($config){
-		$dft=array(
-			'driver'=>'mysql',//
-			'host'=>'',//
-			'dbname'=>'',//
-			'user'=>'',//
-			'password'=>'',//
-			'charset'=>'utf8',
-			'port'=>'3306',//
-			'persist'=>true
-		);
-		extract($dft);
-		extract($config,EXTR_OVERWRITE);
+	//to get a  EP_Table object 
+	//TODO: Do tables need cache?
+	public function t($tableName){
+		if(isset($this->_t_cache[$tableName])){
+			return $this->_t_cache[$tableName];
+		}
+		$t=new EP_Table($this,$tableName);
+		$this->_t_cache[$tableName]=$t;
+		return $t;
+	}
+
+	//config array only
+	private function setConfig(){
+		$driver='mysql';
+		$host='127.0.0.1';
+		$dbname='';
+		$user='';
+		$password='';
+		$charset='utf8';
+		$port='3306';
+		$persist=true;
+
+		extract($this->_config,EXTR_OVERWRITE);
 		
 		$this->_charset=$charset;
 		
@@ -62,8 +84,14 @@ class EP_DB{
 		));
 		
 	}
-	//init pdo's attribute
-	private function init(){
+	//connect pdo's attribute
+	private function connect(){
+		$this->setConfig();
+
+		if($this->_pdo==null){
+			throw new Exception('DB Connection error.','DBErr');
+			return ;
+		}
 		//leave column names to origin case. 
 		$this->_pdo->setAttribute(PDO::ATTR_CASE,PDO::CASE_NATURAL);
 		//if occur error then throw exception
@@ -76,21 +104,103 @@ class EP_DB{
 		$this->_pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE,PDO::FETCH_ASSOC);
 		
 	}
+	private function init(){
+		if($this->isInit)return ;
+		$this->connect();
+
+		$this->exec('set names '.$this->_charset);
+
+		$this->isInit=true;
+	}
+	public function exec($sql){
+		E::log('Execute SQL: '.$sql,'DB');
+		return $this->_pdo->exec($sql);
+	}
+	public function query($sql){
+		E::log('Execute SQL: '.$sql,'DB');
+		$stm=$this->_pdo->query($sql);
+		$stm->setFetchMode(PDO::FETCH_ASSOC);
+		return $stm->fetchAll();
+	}
+
+	// if exec query SQL then return an array of result set
+	//if exec update ,delete ,insert  ,then return affectRows
+	function prepare($sql,$params=null){
+		$pdo=$this->_pdo;
+		E::log('Execute SQL:'.$sql,'DB');
 	
-	function binds(){
+		if(empty($this->prepareStatments[$sql])){
+			$stm=$this->prepareStatments[$sql]=$pdo->prepare($sql);
+
+			//default to be assoc. any question?
+			$stm->setFetchMode(PDO::FETCH_ASSOC);
+		}else{
+			$stm=$this->prepareStatments[$sql];
+		}
+		if(is_array($params)){
+			//bind params , pdo's bug ,val must be reference
+			foreach ($params as $name => &$val) {
+				$type=PDO::PARAM_STR;
+				if( is_int( $val ) ){
+					$type=PDO::PARAM_INT;//echo 'type: PARAM_INT<br>';
+				}else if( is_bool( $val ) ){
+	 				$type=PDO::PARAM_BOOL;//echo 'type: PARAM_BOOL<br>';
+				}else if( is_null( $val ) ){
+	 				$type=PDO::PARAM_NULL;//echo 'type: PARAM_NULL<br>';
+	 			}
+				//WTEST:
+				if(is_numeric($name)){
+					$stm->bindValue($name+1,$val,$type);
+					E::log("bindValue: ".($name+1)."=>$val ");
+				}else{
+					$stm->bindParam(':'.$name,$val,$type);
+					E::log("bindParam: :$name=>$val ");
+				}
+			}
 		
+		}
+		//E::log($params,'DB');
+		try{
+			$execRet=$stm->execute();
+		}catch(Exception $e){
+			$errInfo=$stm->errorInfo();
+			switch ($errInfo[0]) {
+				case 'HY093':
+					E::log('SQL Error when bind params. [HY093]','DBErr');
+					break;
+				//case more:
+				default:
+					E::log('SQL Code:'.$errInfo[0],'DBErr');
+					E::log('Database Driver Code:'.$errInfo[1],'DBErr');
+					E::log('Driver error message:'.$errInfo[2],'DBErr');
+					break;
+			}
+			
+			return false;
+		}
+		if($execRet===false)return false;
+
+		try{
+			//execute update,delete,insert will throw exception, catch it and ignore.
+			$rows=$stm->fetchAll();
+			return $rows;
+		}catch(Exception $e){
+			//E::log($e,'dbe');
+		}
+		return $stm->rowCount();
 	}
-	function update($kv,$where){
-		
+	//call lastInsertId() when execute successfully
+	//some db driver need $name. PDO_PGSQL()  eg.
+	public function lastInsertId ($name =null){
+		if($this->_pdo==null){
+			return -1;
+		}
+		return $this->_pdo->lastInsertId($name);
 	}
-	function select(){
-		
-	}
-	function delete(){
-		
-	}
-	function insert(){
-		
+	
+	public function getPDO(){
+		return $this->_pdo;
 	}
 }
 
+?>

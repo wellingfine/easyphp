@@ -39,7 +39,7 @@ class EP_Log{
 	function log($content,$tag=''){
 		if(!$this->enable)return $this;
 		
-		if(in_array($tag,$this->tagFilter))return $this;
+		if( in_array($tag,$this->tagFilter))return $this;
 		
 		if($tag!='')$tag='['.$tag.']';
 		if(is_array($content)||is_object($content)){
@@ -62,8 +62,9 @@ class EP_Log{
 		$fp = fopen($this->file, 'a');
 		//echo implode("<br>",$this->log)."<br>";
 		if ($fp && flock($fp, LOCK_EX)){
-
-			$r=fwrite($fp, implode("\n",$this->log)."\n");
+			if(count($this->log)!=0){
+				$r=fwrite($fp, implode("\n",$this->log)."\n");
+			}
 			//print_r(implode("\r\n",$this->log));
 			flock($fp, LOCK_UN);
 			fclose($fp);
@@ -84,7 +85,7 @@ class EP_Log{
 						break;
 					}
 					$i++;
-					if($i>500){
+					if($i>1000){
 						return ;
 					}
 				}
