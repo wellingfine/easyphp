@@ -47,7 +47,7 @@ class EP_Route{
 			$reg=$rule['rule'];
 			// replace / to \/
 			$reg='/^'.preg_replace('/\//','\\/',$reg).'$/';
-			E::log('route reg:'.$reg);
+			//E::log('route reg:'.$reg);
 			if(preg_match($reg,$path_info,$matches)){
 				$ctrlName=is_int( $rule['controller'] )?
 					(E::get($rule['controller'],'',$matches)):

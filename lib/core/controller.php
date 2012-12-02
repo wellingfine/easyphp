@@ -3,16 +3,23 @@
 	by welling fine
 	todo: be more elegance
 */
-abstract class EP_Controller{
-	
+class EP_Controller{
+
 	//传递到页面的参数
 	protected $_views=array();
 	
 	//if json is null , then use view.
 	//if json not null, echo it ! note: if you want to output json this way ,make sure your controller don't  output any strings
 	protected $_json=null;
-	
+
+	//due with exception
+	//$e: Exception 
+	//output readable information to user
+	function __exception($expMsg,$filePath,$line){
+		//echo $expMsg;
+	}
 	function __execute($act,$args=array()){
+	
 		$actFullName='action'.$act;
 		if(method_exists($this,$actFullName)){
 			if(!$this->onBeforeExecute($act))return ;
@@ -24,7 +31,7 @@ abstract class EP_Controller{
 				$suc=E::i()->displayView($act,$this->_views);
 				if(!$suc){//view not found
 					E::log('view:'.$act.' not found','warning');
-					E::i()->displayView(E::config('view_not_found'));
+					E::i()->displayView(E::c('view_not_found'));
 				}
 			}else{
 
@@ -40,7 +47,7 @@ abstract class EP_Controller{
 				$suc=E::i()->displayView($act,$this->_views);
 				if(!$suc){//view not found
 					E::log('view:'.$act.' not found','warning');
-					E::instance()->displayView(E::config('view_not_found'));
+					E::i()->displayView(E::c('view_not_found'));
 				}
 				return ;
 			}
@@ -64,7 +71,7 @@ abstract class EP_Controller{
 		return true;
 	}
 	protected function onActionUndefined($actionName){
-		E::instance()->displayView(E::config('action_not_found'));
+		E::i()->displayView(E::c('action_not_found'));
 		//throw new Exception('undefined action ['.$actionName.']');
 		E::log('undefined action ['.$actionName.']','error');
 	}

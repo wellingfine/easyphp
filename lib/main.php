@@ -22,6 +22,7 @@ class E{
 	//cache the db object (EP_DB)
 	private $_db_cache=array();
 
+	private $_cur_controller=null;
 	//store used models 
 	//we can use this way to avoid creating static Model class,make your code more clean ,but do the same thing.
 	//notice!: a standar model's constructor must be no args,or has default value
@@ -79,14 +80,16 @@ class E{
 		$this->viewObject=new EP_View();
 		$this->viewObject->importDir(self::$config['project_path'].'view');
 
-		set_exception_handler(array($this,'_exceptionHandler'));
 		set_error_handler(array($this,'_errorHandler'));
 	}
+	/*
+	 函数参数不对，等非致命令错误的话，会到这里
+	 */
 	public function _errorHandler ( $errno ,$errstr , $errfile ,$errline){
-		E::log('E:Error=>'.$errno.' file:'.$errfile.' line:'.$errline,'error')->flush();
-	}
-	public function _exceptionHandler($e){
-		E::log('E:Exception=>'.$e->getMessage().' file:'.$e->getFile().' line:'.$e->getLine(),'error')->flush();
+		E::log($errstr.' file:'.$errfile.' line:'.$errline,'error')->flush();
+		//
+		if($this->_cur_controller!=null)
+			$this->_cur_controller->__exception($errstr,$errfile,$errline);
 	}
 	private function autoLoad($className){
 		$ret=E::loadFile($className,array(
@@ -162,7 +165,15 @@ class E{
 		//||interface_exists($controller)
 			){
 			$controller=new $controller();
-			$controller->__execute($actionName);
+			$this->_cur_controller=$controller;
+			try{
+				$controller->__execute($actionName);
+			}catch(Exception $e){
+				E::log('Exception: '.$e->getMessage(),'error');
+				E::log(' file: '.$e->getFile().'\n line: '.$e->getLine(),'error')->flush();
+				//call controller's exception
+				$controller->__exception($e->getMessage(),$e->getFile(),$e->getLine());
+			}
 		}else{
 			E::log('controller ['.$controller.'] is not exsit.','error');
 			$this->displayView(self::$config['controller_not_found']);
@@ -274,7 +285,7 @@ class E{
 	public static function end(){
 		session_write_close();
 	}
-	public static function log($content,$tag=''){
+	public static function log($content='',$tag=''){
 		$inst=self::$instance;
 		$inst->logObject->log($content,$tag);
 		return $inst->logObject;

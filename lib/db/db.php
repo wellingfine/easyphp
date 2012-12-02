@@ -32,7 +32,6 @@ class EP_DB{
 		$this->_config=$conn;
 		$this->init();
 	}
-	
 	//to get a  EP_Table object 
 	//TODO: Do tables need cache?
 	public function t($tableName){

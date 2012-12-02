@@ -3,7 +3,7 @@ class EP_Table{
 	private $db=null;
 
 	protected $dsn='';
-	protected $tableName='';
+	protected $name='';
 
 	//if debug==true sql will not run directly but output to logs.
 	public $debug=false;
@@ -38,7 +38,6 @@ class EP_Table{
 		return $this;
 	}
 	//--------
-
 	private function normalizeTableName($tableName){
 		$pieces=explode('.', $tableName);
 		foreach($pieces as &$p){
@@ -50,28 +49,28 @@ class EP_Table{
 		if(!empty($this->columns)){
 			return $this->columns;
 		}
-		$this->columns = $this->query('show columns from '.$this->normalizeTableName($this->tableName));
-		//todo
+		//$c = $this->query('show columns from '.$this->normalizeTableName($this->name));
+		$c = $this->query('show columns from '.$this->name);
+		$newC=array();
+		foreach ($c as $key) {
+			$newC[$key['Field']]=$key['Type'];
+		}
 
-		//
+		$this->columns=$newC;
+		//var_dump($this->columns);
 		return $this->columns;
 	}
+
 	// filter $arr 's key and return a new array;
-	// TODO: name to be changed
-	public function filterByColumn($arr){
+	public function filterColumn($arr){
 		$newArr=array();
+		$this->getColumns();
 		foreach($arr as $key=>$v){
 			if(isset($this->columns[$key])){
 				$newArr[$key]=$v;
 			}
 		}
 		return $newArr;
-	}
-	/*--------------------
-	 * for developer 
-	 *-------------------*/
-	public function filterColumn($val=true){
-
 	}
 	/*
 	 * set resultSet's columns default to *
@@ -108,22 +107,35 @@ class EP_Table{
 	public function group(){
 
 	}
-	public function 
-
 	/*----------------------
 	 * basic sql caller ,everytime will clear the cache.
 	 *----------------------*/
 	public function select(){
 
 	}
-	public function delete(){
+	public function delete($where){
 
 	}
-	public function update($arr){
+	public function update($arr,$where){
 
 	}
-	public function insert($arr){
+	public function insert($arr,$ignore=false){
+		$arr=$this->filterColumn($arr);
+		$sql='INSERT INTO `'. addslashes($this->name) .'` ';
 
+		$keys=array();
+		$vals=array();
+		if(empty($arr)){
+			E::log('insert empty!','db');
+			return false;
+		}
+		foreach ($arr as $k => $v) {
+			$keys[]='`'.addslashes($k).'`';
+			$vals[]='"'.addslashes($v).'"';
+		}
+		$sql.=' ('.implode(' , ', $keys).') values ('.implode(',', $vals) .')';
+		$this->exec($sql);
+		return $this->db->lastInsertId();
 	}
 
 	public function logSql(){}
@@ -135,12 +147,12 @@ class EP_Table{
 
 	//db operatations:
 	public function exec($sql){
-		$this->db->exec($sql);
+		return $this->db->exec($sql);
 	}
 	public function query($sql){
-		$this->db->query($sql);
+		return $this->db->query($sql);
 	}
 	public function prepare($sql,$params=null){
-		$this->db->query($sql,$params);
+		return $this->db->prepare($sql,$params);
 	}
 }
