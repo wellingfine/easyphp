@@ -17,6 +17,7 @@ $config=array(
 		//'core',
 	),
 	
+
 	//权限控制 用户详细信息
 	'_rbac_userSessionKey'=>'ep_rbac_user',
 	//角色

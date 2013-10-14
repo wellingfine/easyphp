@@ -114,10 +114,21 @@ class EP_Table{
 
 	}
 	public function delete($where){
-
+		$sql='DELETE FROM `'.addslashes($this->name).'` where '.$where;
+		return $this->exec($sql);
 	}
 	public function update($arr,$where){
+		$arr=$this->filterColumn($arr);
+		$sql='UPDATE `'. addslashes($this->name) .'`  set ';
+		$s=array();
+		foreach ($arr as $k => $v) {
+			$v=addslashes($v);
+			$s[]=" `$k`='$v' ";
+		}
+		if(count($s)==0)return 1;
+		$sql.=implode(',', $s).'  WHERE '.$where;
 
+		return $this->exec($sql);
 	}
 	public function insert($arr,$ignore=false){
 		$arr=$this->filterColumn($arr);

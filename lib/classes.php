@@ -1,11 +1,13 @@
 <?php
 //list all core classes and require
 $class=array(
+	
 	'core/controller.php',
 	'core/log.php',
 	'core/view.php',
 	'db/db.php',
 	'db/table.php',
+	'db/sql.php',
 );
 
 foreach($class as $c){

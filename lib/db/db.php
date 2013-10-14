@@ -1,9 +1,9 @@
 <?php
 /*
-Only when a sql is ready to execute ,a PDO will be create .
 notice:
 1.数据表名不能含有"." ,见 normalTableName();
-
+2.when created ,PDO is connecting
+TODO:DB要真正执行SQL时才连接
  */
 class EP_DB{
 	//pdo object
@@ -20,7 +20,7 @@ class EP_DB{
 	protected $columns=array();
 
 	//cache all prepared statment.
-	protected $prepareStatments=array(); 
+	protected $prepareStatments=array();
 
 	//table caches
 	private $_t_cache=array();
@@ -80,6 +80,7 @@ class EP_DB{
 		}
 		$this->_pdo=new PDO($dsn, $user, $password,array(
 			PDO::ATTR_PERSISTENT=>$persist,
+			PDO::MYSQL_ATTR_MAX_BUFFER_SIZE=>1024*1024*50
 		));
 		
 	}
@@ -113,19 +114,27 @@ class EP_DB{
 	}
 	public function exec($sql){
 		E::log('Execute SQL: '.$sql,'DB');
-		return $this->_pdo->exec($sql);
+
+		$ret= $this->_pdo->exec($sql);
 	}
 	public function query($sql){
 		E::log('Execute SQL: '.$sql,'DB');
 		$stm=$this->_pdo->query($sql);
 		$stm->setFetchMode(PDO::FETCH_ASSOC);
-		return $stm->fetchAll();
+		try{
+			$rows=$stm->fetchAll();
+
+		}catch(Exception $e){
+			$rows=$stm->rowCount();
+		}
+		return $rows;
 	}
 
 	// if exec query SQL then return an array of result set
 	//if exec update ,delete ,insert  ,then return affectRows
 	function prepare($sql,$params=null){
 		$pdo=$this->_pdo;
+		
 		E::log('Execute SQL:'.$sql,'DB');
 	
 		if(empty($this->prepareStatments[$sql])){
@@ -199,6 +208,14 @@ class EP_DB{
 	
 	public function getPDO(){
 		return $this->_pdo;
+	}
+
+	/*
+	TODO:返回上一次的错误
+		
+	*/
+	public function error(){
+
 	}
 }
 

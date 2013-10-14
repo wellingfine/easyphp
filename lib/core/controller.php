@@ -15,8 +15,12 @@ class EP_Controller{
 	//due with exception
 	//$e: Exception 
 	//output readable information to user
-	function __exception($expMsg,$filePath,$line){
+	function __exception($expMsg,$filePath,$line,$traceMsg=''){
 		//echo $expMsg;
+	}
+
+	private function output(){
+
 	}
 	function __execute($act,$args=array()){
 	
@@ -28,17 +32,17 @@ class EP_Controller{
 			$this->onAfterExecute($act,$ret);
 
 			if($this->_json==null){// 
-				$suc=E::i()->displayView($act,$this->_views);
+				$suc=E::i()->displayView(strtolower($act),$this->_views);
 				if(!$suc){//view not found
 					E::log('view:'.$act.' not found','warning');
-					E::i()->displayView(E::c('view_not_found'));
+					E::i()->displayView(E::c('_view_not_found'));
 				}
 			}else{
 
 				if(is_string($this->_json)){
 					echo $this->_json;
 				}else{
-					echo json_encode($this->_json);
+					echo json_encode($this->_json/*, JSON_NUMERIC_CHECK*/);
 				}
 			}
 /*
@@ -47,7 +51,7 @@ class EP_Controller{
 				$suc=E::i()->displayView($act,$this->_views);
 				if(!$suc){//view not found
 					E::log('view:'.$act.' not found','warning');
-					E::i()->displayView(E::c('view_not_found'));
+					E::i()->displayView(E::c('_view_not_found'));
 				}
 				return ;
 			}
@@ -62,6 +66,11 @@ class EP_Controller{
 			$this->onActionUndefined($act);
 		}
 	}
+
+	//when exception or error
+	protected function onError(){
+
+	}
 	//
 	protected function onBeforeExecute($actionName){
 		return true;
@@ -71,7 +80,7 @@ class EP_Controller{
 		return true;
 	}
 	protected function onActionUndefined($actionName){
-		E::i()->displayView(E::c('action_not_found'));
+		E::i()->displayView(E::c('_action_not_found'));
 		//throw new Exception('undefined action ['.$actionName.']');
 		E::log('undefined action ['.$actionName.']','error');
 	}

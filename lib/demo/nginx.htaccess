@@ -1,0 +1,6 @@
+#nginx rewrite rule
+
+if (!-e $request_filename) {
+	rewrite ^/(\w+)/?$ /$1.php/ break;
+	rewrite ^/(\w+)/(.*)$ /$1.php/$2 break;
+}

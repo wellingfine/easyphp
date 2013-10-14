@@ -1,4 +1,18 @@
 <?php
+class EP_One{
+	public static $_instance_=null;
+	public static function i(){
+		if(self::$_instance_){
+			return self::$_instance_;
+		}else{
+			//echo __CLASS__;
+			self::$_instance_=new self();
+		}
+		return self::$_instance_;
+	}
+}
+
+require('lazy.php');
 /*
  * 键名用下划线分隔
  * 约定：
@@ -35,7 +49,9 @@ class E{
 		
 		//start and block a session first,no matter what you want ,
 		//call E::end() or session_write_close() to end a seesion
+		session_cache_expire($config['_session_life_time']);
 		session_start();
+		ini_set('session.gc_maxlifetime', $config['_session_life_time']);
 		// forbiden magic quotes
         @set_magic_quotes_runtime(0);
         // process the converted data ,make it back.
@@ -58,27 +74,27 @@ class E{
 	//init all about framework, called in start()
 	//configs , logs ,
 	private function initApp(){
-		$appPath=self::$config['app_path'];
+		$appPath=self::$config['_app_path'];
 		//load app config ,and overwrite globalconfig
 		$appConfig=require($appPath.'config.php');
 		foreach($appConfig as $k=>$v){
 			self::$config[$k]=$v;
 		}
-		self::$config['db_config']= require($appPath.'db.php');
+		self::$config['_db_config']= require($appPath.'db.php');
 		//load all classes
 		require('classes.php');
 		
 		
 		//init log
 		$this->logObject=new EP_Log(
-			$appPath.'logs'.DS.self::$config['log_name'],self::$config['log_bufferSize'],
-			self::$config['log_maxSize'],
-			self::$config['log_tagFilter']
+			$appPath.'logs'.DS.self::$config['_log_name'],self::$config['_log_bufferSize'],
+			self::$config['_log_maxSize'],
+			self::$config['_log_tagFilter']
 		);
-		$this->logObject->setEnable(self::$config['log_enable']);
+		$this->logObject->setEnable(self::$config['_log_enable']);
 
 		$this->viewObject=new EP_View();
-		$this->viewObject->importDir(self::$config['project_path'].'view');
+		$this->viewObject->importDir(self::$config['_project_path'].'view');
 
 		set_error_handler(array($this,'_errorHandler'));
 	}
@@ -93,9 +109,9 @@ class E{
 	}
 	private function autoLoad($className){
 		$ret=E::loadFile($className,array(
-			self::$config['app_path'].'model',
-			self::$config['project_path'].'model',
-			self::$config['lib_path'].'modules',
+			self::$config['_app_path'].'model',
+			self::$config['_project_path'].'model',
+			self::$config['_lib_path'].'modules',
 		));
 	}
 	
@@ -110,24 +126,17 @@ class E{
 	public function start ($appname='index'){
 		global $__starttime;
 		//set app path
-		self::$config['app_path']=self::$config['project_path'].'apps'.DS.$appname.DS;
-		self::$config['app_name']=$appname;
-		if(!file_exists(self::$config['app_path'])){
-			//app not found
-			//TODO: viewObject not init 
-			E::log('app ['.$appname.'] is not exsit.');
-			$this->displayView(self::$config['app_not_found']);
-			return ;
-		}
+		self::$config['_app_path']=self::$config['_project_path'].'apps'.DS.$appname.DS;
+		self::$config['_app_name']=$appname;
 		
 		//init when app_dir is set
 		$this->initApp();
-		$this->viewObject->importDir(self::$config['app_path'].'view');
+		$this->viewObject->importDir(self::$config['_app_path'].'view');
 		$controllerName='default';
 		$actionName='default';
 		//url rewrite
-		if(self::$config['route_enable']===true){
-			require(self::$config['lib_path'].'core'.DS.'route.php');
+		if(self::$config['_route_enable']===true){
+			require(self::$config['_lib_path'].'core'.DS.'route.php');
 			EP_Route::dispatch($controllerName,$actionName);
 		}else{
 			// use $_GET only if route is disable
@@ -135,12 +144,12 @@ class E{
 			$actionName=E::get('action','default');
 		}
 		//Role Base Access Control start
-		if(self::$config['rbac_enable']===true){
-			require(self::$config['lib_path'].'core'.DS.'rbac.php');
+		if(self::$config['_rbac_enable']===true){
+			require(self::$config['_lib_path'].'core'.DS.'rbac.php');
 			
 			if(!EP_Rbac::identify($controllerName,$actionName)){
 				E::log('Access deny :role forbiden. Please login first.','error');
-				$this->displayView(self::$config['rbac_failed_page'],array(
+				$this->displayView(self::$config['_rbac_failed_page'],array(
 					'url'=>E::get('REQUEST_URI','/',$_SERVER)
 				));
 				return ;
@@ -148,18 +157,18 @@ class E{
 		}
 		
 		//write down current ctrl and act
-		self::$config['controller']=$controllerName;
-		self::$config['action']=$actionName;
+		self::$config['_controller']=$controllerName;
+		self::$config['_action']=$actionName;
 		//E::log("$__starttime {$appname}[{$controllerName}/{$actionName}]",'core');
 		E::log("begin:{$appname}[{$controllerName}/{$actionName}]",'core');
 		
 		$controller=$controllerName.'_controller';
 		
 		//装载controller
-		$this->loadFile($controller,self::$config['app_path'].'controller');
+		$this->loadFile($controller,self::$config['_app_path'].'controller');
 
 		//View
-		$this->viewObject->importDir(self::$config['app_path'].'view'.DS.$controllerName);
+		$this->viewObject->importDir(self::$config['_app_path'].'view'.DS.$controllerName);
 
 		if(class_exists($controller,false)
 		//||interface_exists($controller)
@@ -169,14 +178,16 @@ class E{
 			try{
 				$controller->__execute($actionName);
 			}catch(Exception $e){
-				E::log('Exception: '.$e->getMessage(),'error');
-				E::log(' file: '.$e->getFile().'\n line: '.$e->getLine(),'error')->flush();
+				E::log('Exception: '.$e->getMessage()."\n".$e->getTraceAsString(),'error');
+				E::log(' file: '.$e->getFile()." line: ".$e->getLine(),'error')->flush();
 				//call controller's exception
-				$controller->__exception($e->getMessage(),$e->getFile(),$e->getLine());
+
+				//$controller->__exception($e->getMessage(),$e->getFile(),$e->getLine());
+				$controller->__exception($e->getMessage(),$e->getFile(),$e->getLine(),$e->getTraceAsString());
 			}
 		}else{
 			E::log('controller ['.$controller.'] is not exsit.','error');
-			$this->displayView(self::$config['controller_not_found']);
+			$this->displayView(self::$config['_controller_not_found']);
 		}
 		//ensure to flush the log.
 		E::log('used '.round( microtime(true)-$__starttime,5 ).'s','core')->flush(true);
@@ -191,20 +202,30 @@ class E{
 //-------------------------static function below.
 	//set user(mixed) and role(string).
 	//role is a name that you deside,but remember to write it in the app_dir/acl.php
-	public static function setUser($user,$role=''){
-		$_SESSION[self::$config['rbac_userSessionKey']]=$user;
-		$_SESSION[self::$config['rbac_roleSessionKey']]=$role;
+	//24*3600=86400
+	public static function setUser($user,$role='',$seconds=86400){
+		session_destroy();
+		session_write_close();
+
+		session_start();
+		session_regenerate_id();
+		//session_cache_expire(intval($seconds/60));
+		//ini_set('session.gc_maxlifetime', ''.$seconds);
+		$_SESSION[self::$config['_rbac_userSessionKey']]=$user;
+		$_SESSION[self::$config['_rbac_roleSessionKey']]=$role;
+
+		setcookie( session_name(),session_id(),time()+$seconds,'/');
 	}
 	//get user by key or return a usr array
 	public static function getUser($key=''){
-		$usrinfo=self::get(self::$config['rbac_userSessionKey'],array(),$_SESSION);
+		$usrinfo=self::get(self::$config['_rbac_userSessionKey'],array(),$_SESSION);
 		if($key!=''){
 			return self::get($key,'',$usrinfo);
 		}
 		return $usrinfo;
 	}
 	public static function getRole(){
-		return self::get(self::$config['rbac_roleSessionKey'],'',$_SESSION);
+		return self::get(self::$config['_rbac_roleSessionKey'],'',$_SESSION);
 	}
 
 	public static function i(){
@@ -227,9 +248,10 @@ class E{
 	}
 	//get database connector
 	//forceNew : true to create a new connection without cache 
+	// why use force new?
 	public static function d($dsn,$forceNew=false){
 		if(!is_array($dsn)){
-			$dbConfig=self::c('db_config');
+			$dbConfig=self::c('_db_config');
 			if(!is_array($dbConfig)){
 				throw new Exception('DB Config format error!');
 			}
@@ -237,6 +259,7 @@ class E{
 			$dsn=self::get($dsn,array(),$dbConfig);
 		}
 		$inst=self::$instance;
+
 		if($forceNew){
 			$db=new EP_DB($dsn);
 		}else{
@@ -253,32 +276,41 @@ class E{
 
 	// get table instance
 	//ABANDON:
-	public static function t($db,$tableName,$forceNew=false){
-		//
-		return new EP_Table(E::d($dsn),$tableName);
-	}
-	//3 ways to go :
-	//$className get an exist model by nickName
-	//$className 
-	/*
-	public static function mm($className,$nickName,$args){
+	// public static function t($db,$tableName,$forceNew=false){
+	// 	//
+	// 	return new EP_Table(E::d($dsn),$tableName);
+	// }
 
-	}*/
-	//create a model and store to $_models
-	//a model's constructor should be no args.
-	//ABANDON:
-	public static function m($modelName){
+	/*
+		在注册类中寻找已注册的类别名，如找到则返回
+		使得自定的类只要初始化一次即可
+
+		带上obj则表示要初始化
+	*/
+	public static function m($modelName,$obj=null){
 		$inst=self::$instance;
-		if(isset($inst->_models[$modelName]) ){
+		if(!empty($inst->_models[$modelName]) ){
 			return $inst->_models[$modelName];
 		}
+		if($obj!=null){
+			$inst->_models[$modelName]=$obj;
+			return $obj;
+		}
+
 		try{
 			$modelObject=new $modelName();
 		}catch(Exception $e){
-			E::log($e)->flush();
+			E::log($e->getMessage())->flush();
+			return null;
 		}
 		$inst->_models[$modelName]=$modelObject;
 		return $modelObject;
+	}
+	//目的在于可以比较方便的改APP名。。。
+	//但如果跨APP用的话，会变成当前请求的APP名
+	//TODO:make more functions
+	public static function url($ctrlAct=''){
+		return '/'.self::$config['_app_name'].'/'.$ctrlAct;
 	}
 
 	//end up session block ,so next session can go on.
@@ -322,13 +354,13 @@ class E{
 		if($arr==null){
 			$arr=$_GET;
 		}
-		return isset($arr[$key])?$arr[$key]:$default;
+		return empty($arr[$key])?$default:$arr[$key];
 	}
 	public static function post($key,$default=''){
-		return isset($_POST[$key])?$_POST[$key]:$default;
+		return empty($_POST[$key])?$default:$_POST[$key];
 	}
 	public static function request($key,$default=''){
-		return isset($_REQUEST[$key])?$_REQUEST[$key]:$default;
+		return empty($_REQUEST[$key])?$default:$_REQUEST[$key];
 	}
 	
 }

@@ -41,7 +41,7 @@ class EP_View{
 		
 		//a view reach its end,so render and pop it up 
 		$this->render($this->views[$vk]['name']);
-		array_pop($this->views[$vk]);
+		array_pop($this->views);
 	}
 	private function block($name){
 		ob_start();

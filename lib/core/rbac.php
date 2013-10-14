@@ -18,8 +18,8 @@ class EP_Rbac{
 	优先使用子正则：action 没定义正则，就使用controller的，controller没定义就用全局默认规则
 	*/
 	public static function identify($controllerName,$actionName){
-		$dft=E::c('rbac_default');
-		$acl=require_once(E::c('app_path').'acl.php');
+		$dft=E::c('_rbac_default');
+		$acl=require_once(E::c('_app_path').'acl.php');
 		
 		//控制器
 		$ctrl=E::get($controllerName,array(),$acl);
@@ -27,7 +27,6 @@ class EP_Rbac{
 		//action
 		$act=E::get('actions',array(),$ctrl);
 		$testedAclRule=E::get($actionName,$testedAclRule,$act);
-		
 		//replace / to \/ and add ^$ to it 
 		$testedAclRule='/^'.preg_replace('/\//','\\/',$testedAclRule).'$/';
 		$role=E::i()->getRole();
