@@ -1,20 +1,21 @@
 <?php
-//全局配置
-//为了配置的简单，只支持一维数组，在应用程序中的
-//常量定义
-define('DS', DIRECTORY_SEPARATOR);
+/*
+	start config.
+*/
 
-//use by framework will start with '_'
+define('DS', DIRECTORY_SEPARATOR);
+$dir=dirname(__FILE__).DS;
+
+//all config
 $config=array(
-	//日志缓冲区大小
-	'_log_bufferSize'=>1024,
-	//框架运行日志 true开启，非true关闭
+
+	//
+	'_log_bufferSize'=>1024, //once full will log down to file.
 	'_log_enable'=>true,
-	//日志最大容量 50M
-	'_log_maxSize'=>50*1024*1024,
-	'_log_name'=>'app.log',//log的名字
-	'_log_tagFilter'=>array(//标签过滤，不显示以下的标签
-		//'core',
+	'_log_name'=>'app',// => name.yyyymmdd.log
+	'_log_tagFilter'=>array(//hide these tag's log
+		//'core',//framework's tag
+		//'db',//db operation
 	),
 	
 	//权限控制 用户详细信息
@@ -24,7 +25,7 @@ $config=array(
 	//是否启用 rbac
 	'_rbac_enable'=>true,
 	//默认权限:all=>.*   limit=>.+
-	'_rbac_default'=>'.+',
+	'_rbac_default'=>'.*',
 	//身份认证失败页面,jump to view
 	'_rbac_failed_page'=>'403',
 	
@@ -46,27 +47,25 @@ $config=array(
 	
 	//
 	'_charset'=>'utf-8',
-	//以下请勿覆盖-------
-	//when needed ,framework will load dbconfig(db.php) to cover this value even defined in subconfig, 
-	'_db_config'=>null,
-	//框架目录,默认是在项目目录的lib里面,如有需要可以更改
-	'_lib_path'=>dirname(__FILE__).DS.'lib'.DS,
-	//项目目录,和 globalconfig.php 在同一个目录
-	'_project_path'=>dirname(__FILE__).DS,
-	'_app_path'=>'',
 	'_session_life_time'=>432000,
 
-	//runtime value ---
-	'_app_path'=>'',
-	'_app_name'=>'',
+
+	//path setting .
+	'_lib_path'=>$dir.'lib'.DS,
+	'_app_path'=>$dir.'app'.DS,
 	
-	//current controller name and action name
+	/*
+		runtime values, framework will set these value when running,
+		so don't change it in any case.
+	*/
 	'_controller'=>'',
 	'_action'=>'',
+	'_db_config'=>null,
 );
 
 header('Content-Type: text/html;charset='.$config['_charset']);
 //load main entrance
-require_once($config['_lib_path'].'main.php');
+require($config['_lib_path'].'main.php');
 //create main object E
 E::createMe($config);
+E::i()->start();

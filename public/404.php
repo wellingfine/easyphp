@@ -1,5 +1,6 @@
 <?php 
-header('Location: /sys'.$_SERVER['REQUEST_URI']);
+echo 404;
+//header('Location: /index.php'.$_SERVER['REQUEST_URI']);
 return ;
 
 //当出现404时，判断是不是真的404

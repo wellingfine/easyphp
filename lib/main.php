@@ -74,29 +74,7 @@ class E{
 	//init all about framework, called in start()
 	//configs , logs ,
 	private function initApp(){
-		$appPath=self::$config['_app_path'];
-		//load app config ,and overwrite globalconfig
-		$appConfig=require($appPath.'config.php');
-		foreach($appConfig as $k=>$v){
-			self::$config[$k]=$v;
-		}
-		self::$config['_db_config']= require($appPath.'db.php');
-		//load all classes
-		require('classes.php');
-		
-		
-		//init log
-		$this->logObject=new EP_Log(
-			$appPath.'logs'.DS.self::$config['_log_name'],self::$config['_log_bufferSize'],
-			self::$config['_log_maxSize'],
-			self::$config['_log_tagFilter']
-		);
-		$this->logObject->setEnable(self::$config['_log_enable']);
 
-		$this->viewObject=new EP_View();
-		$this->viewObject->importDir(self::$config['_project_path'].'view');
-
-		set_error_handler(array($this,'_errorHandler'));
 	}
 	/*
 	 函数参数不对，等非致命令错误的话，会到这里
@@ -110,7 +88,6 @@ class E{
 	private function autoLoad($className){
 		$ret=E::loadFile($className,array(
 			self::$config['_app_path'].'model',
-			self::$config['_project_path'].'model',
 			self::$config['_lib_path'].'modules',
 		));
 	}
@@ -123,14 +100,29 @@ class E{
 		3.action not found
 		4.view not found
 	*/
-	public function start ($appname='index'){
+	public function start (){
 		global $__starttime;
-		//set app path
-		self::$config['_app_path']=self::$config['_project_path'].'apps'.DS.$appname.DS;
-		self::$config['_app_name']=$appname;
+
+		$appPath=self::$config['_app_path'];
+		self::$config['_db_config']= require($appPath.'db.php');
+		//load all classes
+		require('classes.php');
 		
-		//init when app_dir is set
-		$this->initApp();
+		//init log
+		$this->logObject=new EP_Log(
+			$appPath.'log'.DS,
+			self::$config['_log_name'],
+			self::$config['_log_bufferSize'],
+			self::$config['_log_tagFilter']
+		);
+		$this->logObject->setEnable(self::$config['_log_enable']);
+
+		$this->viewObject=new EP_View();
+		$this->viewObject->importDir(self::$config['_app_path'].'view');
+
+		set_error_handler(array($this,'_errorHandler'));
+		
+		//*----------
 		$this->viewObject->importDir(self::$config['_app_path'].'view');
 		$controllerName='default';
 		$actionName='default';
@@ -143,10 +135,10 @@ class E{
 			$controllerName=E::get('controller','default');
 			$actionName=E::get('action','default');
 		}
+
 		//Role Base Access Control start
 		if(self::$config['_rbac_enable']===true){
 			require(self::$config['_lib_path'].'core'.DS.'rbac.php');
-			
 			if(!EP_Rbac::identify($controllerName,$actionName)){
 				E::log('Access deny :role forbiden. Please login first.','error');
 				$this->displayView(self::$config['_rbac_failed_page'],array(
@@ -155,18 +147,16 @@ class E{
 				return ;
 			}
 		}
-		
 		//write down current ctrl and act
 		self::$config['_controller']=$controllerName;
 		self::$config['_action']=$actionName;
-		//E::log("$__starttime {$appname}[{$controllerName}/{$actionName}]",'core');
-		E::log("begin:{$appname}[{$controllerName}/{$actionName}]",'core');
+
+		E::log("begin:[{$controllerName}/{$actionName}]",'core');
 		
 		$controller=$controllerName.'_controller';
-		
+
 		//装载controller
 		$this->loadFile($controller,self::$config['_app_path'].'controller');
-
 		//View
 		$this->viewObject->importDir(self::$config['_app_path'].'view'.DS.$controllerName);
 
@@ -185,12 +175,14 @@ class E{
 				//$controller->__exception($e->getMessage(),$e->getFile(),$e->getLine());
 				$controller->__exception($e->getMessage(),$e->getFile(),$e->getLine(),$e->getTraceAsString());
 			}
+
 		}else{
+
 			E::log('controller ['.$controller.'] is not exsit.','error');
 			$this->displayView(self::$config['_controller_not_found']);
 		}
 		//ensure to flush the log.
-		E::log('used '.round( microtime(true)-$__starttime,5 ).'s','core')->flush(true);
+		E::log('used '.round( microtime(true)-$__starttime,5 ).'s','core')->flush();
 	}
 	
 	//directly call viewObject
