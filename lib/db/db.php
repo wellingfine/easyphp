@@ -59,6 +59,8 @@ class EP_DB{
 		$this->_charset=$charset;
 		
 		$driver=strtolower($driver);
+
+		$attr=array();
 		switch($driver){
 			//if driver is manual then use host for dsn.
 			case 'manual':
@@ -75,13 +77,12 @@ class EP_DB{
 			//TODO:some other db is the same as mysql?
 			//PGSQL,MYSQL,cubrid,
 			default :
+				$attr[PDO::ATTR_PERSISTENT]=$persist;
+				//PDO::MYSQL_ATTR_MAX_BUFFER_SIZE=>1024*1024*50
 				$dsn="$driver:host=$host;dbname=$dbname;port=$port";
 				break;
 		}
-		$this->_pdo=new PDO($dsn, $user, $password,array(
-			PDO::ATTR_PERSISTENT=>$persist,
-			PDO::MYSQL_ATTR_MAX_BUFFER_SIZE=>1024*1024*50
-		));
+		$this->_pdo=new PDO($dsn, $user, $password,$attr);
 		
 	}
 	//connect pdo's attribute
@@ -216,6 +217,10 @@ class EP_DB{
 	*/
 	public function error(){
 
+	}
+
+	public function sql(){
+		return new EP_SQL();
 	}
 }
 
