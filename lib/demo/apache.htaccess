@@ -22,9 +22,7 @@
 <IfModule mod_rewrite.c>
 	RewriteCond %{REQUEST_FILENAME} !-f
 	RewriteCond %{REQUEST_FILENAME} !-d
-# \w+ means [0-9a-zA-Z_]+
-	RewriteRule ^(\w+)/(.*)$ $1.php/$2 [L]
-	RewriteRule ^(\w+)$ $1.php [L]
+	RewriteRule ^(.*)$ /index.php/$1 [L]
 </IfModule>
 
 ErrorDocument 403 /403.php

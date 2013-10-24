@@ -53,6 +53,7 @@ $config=array(
 	//path setting .
 	'_lib_path'=>$dir.'lib'.DS,
 	'_app_path'=>$dir.'app'.DS,
+	'_cache_path'=>$dir.'app'.DS.'tmp'.DS.'cache'.DS,
 	
 	/*
 		runtime values, framework will set these value when running,
