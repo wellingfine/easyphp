@@ -85,13 +85,25 @@ class E{
 		if($this->_cur_controller!=null)
 			$this->_cur_controller->__exception($errstr,$errfile,$errline);
 	}
+
+	//自动装载类 
 	private function autoLoad($className){
 		$ret=E::loadFile($className,array(
 			self::$config['_app_path'].'model',
-			self::$config['_lib_path'].'modules',
 		));
 	}
 	
+	/*
+		显式装载一个 app/model 下的类
+		用于model下有多级目录，框架会自动加上php后缀
+		$path =  'dir1/dir2/name'
+	*/
+	public static function load($path){
+
+		//include()
+	}
+
+
 	//start my app
 	/*
 		probably error
@@ -121,7 +133,7 @@ class E{
 		$this->viewObject->importDir(self::$config['_app_path'].'view');
 
 		set_error_handler(array($this,'_errorHandler'));
-		
+		E::log('from ip:'.$_SERVER['REMOTE_ADDR'],'core');
 		//*----------
 		$this->viewObject->importDir(self::$config['_app_path'].'view');
 		$controllerName='default';

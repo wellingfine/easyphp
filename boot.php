@@ -31,13 +31,6 @@ $config=array(
 	
 	//route engine
 	'_route_enable'=>true,
-	//默认路由,将合并到配置路由的最后一行中
-	'_route_default'=>array(
-		'rule'=>'/(.*?)/(.*?)/{0,1}',
-		'controller'=>1,//如果不为数字，那么指定一个默认值
-		'action'=>2,
-		'args'=>array(),//参数
-	),
 	
 	//four types of NotFound
 	//if empty then ignore,but you can see what happen in log.
@@ -53,7 +46,8 @@ $config=array(
 	//path setting .
 	'_lib_path'=>$dir.'lib'.DS,
 	'_app_path'=>$dir.'app'.DS,
-	
+	'_cache_path'=>$dir.'app'.DS.'tmp'.DS.'cache'.DS,
+	'_public_path'=>$dir.'public'.DS,
 	/*
 		runtime values, framework will set these value when running,
 		so don't change it in any case.

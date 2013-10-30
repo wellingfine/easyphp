@@ -26,7 +26,7 @@ class EP_Route{
 	//从 path info 中获取 ctrlname 和 actname
 	public static function dispatch(&$ctrlName,&$actName){
 
-		$rules=require_once(E::c('_app_path').'route.php');
+		$rules=include(E::c('_app_path').'route.php');
 		
 		$path_info = '/';
 		$path_info = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : $path_info;
@@ -34,10 +34,10 @@ class EP_Route{
 		$path_info = isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : $path_info;
 		//ignore the last '/'
 		$path_info = rtrim($path_info,'/');
+
+		//最后的地址会像这样  $path_info='/control//action'
 		E::log('route pathinfo:'.$path_info,'core');
 
-		//合并默认路由,到最后一行
-		$rules[]=E::c('_route_default');
 		foreach($rules as $rule){
 			$prefix=E::get('prefix','',$rule);
 			$reg=$rule['rule'];
@@ -65,6 +65,10 @@ class EP_Route{
 				return ;
 			}
 		}
+		//如果没有匹配到
+		$arr=preg_split('/\/+/',$path_info);
+		$ctrlName=E::get(1,'default',$arr);
+		$actName=E::get(2,'index',$arr);
 	}
 	
 }

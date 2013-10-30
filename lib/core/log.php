@@ -1,7 +1,6 @@
 <?php
 /**
- * This log will not clean old logs,you should do it yourself,or set maxCount larger
- * TODO://not tested.
+ * This log will not clean old logs,you should do it yourself
  * 
  */
 class EP_Log{
@@ -13,10 +12,7 @@ class EP_Log{
 	private $enable=true;
 	
 	private $name; //日志名称
-
-	private $maxCount=1024; //日志文件最大总数
 	
-	private $forceTag='';
 	private $tagFilter;
 	private $date='';
 
@@ -30,10 +26,20 @@ class EP_Log{
 		$this->log=array();
 		$this->date=date('Ymd',time());
 		$this->name=$name;
-		$this->setTagFilter($tagFilter);		
+		$this->setTagFilter($tagFilter);
 		$this->dir=$dir;
 	}
+	/*
+		新建一个Log对象，
+		可以区分开特殊的日志
+	*/
+	function newLog($dir='',$name='',$buffer=1024,$tagFilter=null){
+		if(empty($dir)){
+			$dir=$this->dir;
 
+		}
+		return new EP_Log($dir,$name,$buffer,$tagFilter);
+	}
 	function setTagFilter($tagFilter=null){
 		if($tagFilter==null){
 			$this->tagFilter=array();
