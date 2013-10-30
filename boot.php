@@ -55,6 +55,7 @@ $config=array(
 	'_controller'=>'',
 	'_action'=>'',
 	'_db_config'=>null,
+	'_path_info'=>'',
 );
 
 header('Content-Type: text/html;charset='.$config['_charset']);

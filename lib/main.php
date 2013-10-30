@@ -367,6 +367,22 @@ class E{
 		return empty($_REQUEST[$key])?$default:$_REQUEST[$key];
 	}
 	
+	/*
+		对于没有路由规则的URL，获取整条被 / 分隔的 route
+		$index 下标 1开始 *(注：因为原始路径是以 /开头 所以split后，第一个元素为空)
+		$getKey 如果下标值为空，用 $_GET的Key去填充
+		$dft  默认值
+	*/
+	public static function route($index,$getKey='',$dft=''){
+		$route=E::c('_path_info');
+		if(isset($route[$index])){
+			return $route[$index];
+		}else{
+			//如果不是Route来的，就从$_GET参数中获取
+			return E::get($getKey,$dft);
+		}
+		
+	}
 }
 
 ?>

@@ -38,6 +38,11 @@ class EP_Route{
 		//最后的地址会像这样  $path_info='/control//action'
 		E::log('route pathinfo:'.$path_info,'core');
 
+		//设置Pathinfo的值 
+		$arr=preg_split('/\/+/',$path_info);
+		E::c('_path_info',$arr);
+
+		//遍历 路由规则
 		foreach($rules as $rule){
 			$prefix=E::get('prefix','',$rule);
 			$reg=$rule['rule'];
@@ -66,9 +71,10 @@ class EP_Route{
 			}
 		}
 		//如果没有匹配到
-		$arr=preg_split('/\/+/',$path_info);
+		
 		$ctrlName=E::get(1,'default',$arr);
 		$actName=E::get(2,'index',$arr);
+		
 	}
 	
 }
