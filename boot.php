@@ -38,7 +38,7 @@ $config=array(
 	'_action_not_found'=>'404',
 	'_view_not_found'=>'',
 	
-	//
+	//环境变量
 	'_charset'=>'utf-8',
 	'_session_life_time'=>432000,
 
@@ -48,6 +48,7 @@ $config=array(
 	'_app_path'=>$dir.'app'.DS,
 	'_cache_path'=>$dir.'app'.DS.'tmp'.DS.'cache'.DS,
 	'_public_path'=>$dir.'public'.DS,
+
 	/*
 		runtime values, framework will set these value when running,
 		so don't change it in any case.
