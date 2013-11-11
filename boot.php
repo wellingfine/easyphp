@@ -41,6 +41,7 @@ $config=array(
 	//环境变量
 	'_charset'=>'utf-8',
 	'_session_life_time'=>432000,
+	'_cache_time'=>36000, //默认缓存时间
 
 
 	//path setting .

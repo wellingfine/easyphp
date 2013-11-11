@@ -383,6 +383,43 @@ class E{
 		}
 		
 	}
+	/*
+		文件缓存 *
+		获取缓存，设置缓存
+		@key array,string 字符串或数组，框架会把它算MD5，然后找缓存
+		$val 设置的值
+		$time 时间
+		3600*24=
+	*/
+	public static function cache($key,$val=false,$time=3600){
+
+		if(is_array($key)){
+			$md5=md5(implode('', $key));
+		}else{
+			$md5=md5($key);
+		}
+		$dir=self::c('_cache_path');
+		$path=$dir.$md5;
+
+		if((fileperms($dir) & 0666) != 0666){//没权限
+			E::log('no permission process cache at '.$dir);
+			return false;
+		}
+		if(!file_exists($path)){
+			return false;
+		}
+		//获取缓存
+		if($val===false){
+			if((time()-filectime($path))>$time){
+				unlink($path);
+				return false;
+			}
+			return file_get_contents($path);
+		}else{
+			file_put_contents($path, $val);
+		}
+		return true;
+	}
 }
 
 ?>
