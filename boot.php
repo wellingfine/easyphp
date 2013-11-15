@@ -32,6 +32,10 @@ $config=array(
 	//route engine
 	'_route_enable'=>true,
 	
+	//默认控制器，动作
+	'_default_action'=>'index',
+	'_default_controller'=>'default',
+
 	//four types of NotFound
 	//if empty then ignore,but you can see what happen in log.
 	'_controller_not_found'=>'404',

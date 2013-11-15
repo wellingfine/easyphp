@@ -136,16 +136,17 @@ class E{
 		E::log('from ip:'.$_SERVER['REMOTE_ADDR'],'core');
 		//*----------
 		$this->viewObject->importDir(self::$config['_app_path'].'view');
-		$controllerName='default';
-		$actionName='default';
+
+		$controllerName=self::$config['_default_controller'];
+		$actionName=self::$config['_default_action'];
 		//url rewrite
 		if(self::$config['_route_enable']===true){
 			require(self::$config['_lib_path'].'core'.DS.'route.php');
 			EP_Route::dispatch($controllerName,$actionName);
 		}else{
 			// use $_GET only if route is disable
-			$controllerName=E::get('controller','default');
-			$actionName=E::get('action','default');
+			$controllerName=E::get('controller',$controllerName);
+			$actionName=E::get('action',$actionName);
 		}
 
 		//Role Base Access Control start
