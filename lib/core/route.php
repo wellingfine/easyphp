@@ -72,8 +72,8 @@ class EP_Route{
 		}
 		//如果没有匹配到
 		
-		$ctrlName=E::get(1,'default',$arr);
-		$actName=E::get(2,'index',$arr);
+		$ctrlName=E::get(1,$ctrlName,$arr);
+		$actName=E::get(2,$actName,$arr);
 		
 	}
 	

@@ -29,6 +29,10 @@ class EP_Log{
 		$this->setTagFilter($tagFilter);
 		$this->dir=$dir;
 	}
+
+	function __destruct(){
+		$this->flush();
+	}
 	/*
 		新建一个Log对象，
 		可以区分开特殊的日志

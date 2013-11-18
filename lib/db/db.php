@@ -184,7 +184,7 @@ class EP_DB{
 					E::log('Driver error message:'.$errInfo[2],'DBErr');
 					break;
 			}
-			
+			throw $e;
 			return false;
 		}
 		if($execRet===false)return false;
@@ -194,6 +194,8 @@ class EP_DB{
 			$rows=$stm->fetchAll();
 			return $rows;
 		}catch(Exception $e){
+			throw $e;
+			
 			//E::log($e,'dbe');
 		}
 		return $stm->rowCount();
