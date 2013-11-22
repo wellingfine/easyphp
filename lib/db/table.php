@@ -130,6 +130,9 @@ class EP_Table{
 
 		return $this->exec($sql);
 	}
+	/*
+		返回插入ID，如果有
+	*/
 	public function insert($arr,$ignore=false){
 		$arr=$this->filterColumn($arr);
 		$sql='INSERT INTO `'. addslashes($this->name) .'` ';
