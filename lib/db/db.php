@@ -133,7 +133,16 @@ class EP_DB{
 
 	// if exec query SQL then return an array of result set
 	//if exec update ,delete ,insert  ,then return affectRows
-	function prepare($sql,$params=null){
+	/*
+PDO::PARAM_BOOL
+PDO::PARAM_NULL
+PDO::PARAM_INT
+PDO::PARAM_STR
+PDO::PARAM_LOB
+PDO::PARAM_STMT
+PDO::PARAM_INPUT_OUTPUT
+	*/
+	function prepare($sql,$params=null,$types=array()){
 		$pdo=$this->_pdo;
 		
 		E::log('Execute SQL:'.$sql,'DB');
@@ -149,21 +158,26 @@ class EP_DB{
 		if(is_array($params)){
 			//bind params , pdo's bug ,val must be reference
 			foreach ($params as $name => &$val) {
-				$type=PDO::PARAM_STR;
-				if( is_int( $val ) ){
-					$type=PDO::PARAM_INT;//echo 'type: PARAM_INT<br>';
-				}else if( is_bool( $val ) ){
-	 				$type=PDO::PARAM_BOOL;//echo 'type: PARAM_BOOL<br>';
-				}else if( is_null( $val ) ){
-	 				$type=PDO::PARAM_NULL;//echo 'type: PARAM_NULL<br>';
-	 			}
+				if(isset($types[$name])){
+					$type=$types[$name];
+				}else{
+					$type=PDO::PARAM_STR;
+					if( is_numeric( $val ) ){
+						$type=PDO::PARAM_INT;//echo 'type: PARAM_INT<br>';
+					}else if( is_bool( $val ) ){
+		 				$type=PDO::PARAM_BOOL;//echo 'type: PARAM_BOOL<br>';
+					}else if( is_null( $val ) ){
+		 				$type=PDO::PARAM_NULL;//echo 'type: PARAM_NULL<br>';
+		 			}
+				}
+				
 				//WTEST:
 				if(is_numeric($name)){
 					$stm->bindValue($name+1,$val,$type);
-					E::log("bindValue: ".($name+1)."=>$val ");
+					E::log("bindValue: ".($name+1)."=>$val  type=>$type");
 				}else{
 					$stm->bindParam(':'.$name,$val,$type);
-					E::log("bindParam: :$name=>$val ");
+					E::log("bindParam: :$name=>$val type=>$type");
 				}
 			}
 		
@@ -194,7 +208,7 @@ class EP_DB{
 			$rows=$stm->fetchAll();
 			return $rows;
 		}catch(Exception $e){
-			throw $e;
+			//throw $e;
 			
 			//E::log($e,'dbe');
 		}

@@ -117,6 +117,19 @@ class EP_Table{
 		$sql='DELETE FROM `'.addslashes($this->name).'` where '.$where;
 		return $this->exec($sql);
 	}
+	//use prepare update
+	public function pupdate($arr,$where,$types=array()){
+		$arr=$this->filterColumn($arr);
+		$sql='UPDATE `'. addslashes($this->name) .'`  set ';
+		$s=array();
+		foreach ($arr as $k => $v) {
+			$s[]=" `$k`=:$k ";
+		}
+		if(count($s)==0)return 1;
+		$sql.=implode(',', $s).'  WHERE '.$where;
+
+		return $this->prepare($sql,$arr,$types);
+	}
 	public function update($arr,$where){
 		$arr=$this->filterColumn($arr);
 		$sql='UPDATE `'. addslashes($this->name) .'`  set ';
@@ -129,6 +142,26 @@ class EP_Table{
 		$sql.=implode(',', $s).'  WHERE '.$where;
 
 		return $this->exec($sql);
+	}
+	//use prepare insert
+	public function pinsert($arr,$types=array()){
+		$arr=$this->filterColumn($arr);
+		$sql='INSERT INTO `'. addslashes($this->name) .'` ';
+
+		$keys=array();
+		$vals=array();
+		if(empty($arr)){
+			E::log('insert empty!','db');
+			return false;
+		}
+		foreach ($arr as $k => $v) {
+			$keys[]='`'.$k.'`';
+			$vals[]=':'.$k;
+		}
+		$sql.=' ('.implode(' , ', $keys).') values ('.implode(' , ', $vals) .')';
+		$this->prepare($sql,$arr,$types);
+		//$this->exec($sql);
+		return $this->db->lastInsertId();
 	}
 	/*
 		返回插入ID，如果有
@@ -166,7 +199,7 @@ class EP_Table{
 	public function query($sql){
 		return $this->db->query($sql);
 	}
-	public function prepare($sql,$params=null){
-		return $this->db->prepare($sql,$params);
+	public function prepare($sql,$params=null,$types=array()){
+		return $this->db->prepare($sql,$params,$types);
 	}
 }

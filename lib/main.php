@@ -71,6 +71,9 @@ class E{
 		//register auto load function 
 		spl_autoload_register(array($this, 'autoload'));
 	}
+	function __destruct(){
+		session_write_close();
+	}
 	//init all about framework, called in start()
 	//configs , logs ,
 	private function initApp(){
@@ -137,16 +140,13 @@ class E{
 		//*----------
 		$this->viewObject->importDir(self::$config['_app_path'].'view');
 
-		$controllerName=self::$config['_default_controller'];
-		$actionName=self::$config['_default_action'];
+		$controllerName=E::get('controller',self::$config['_default_controller']);
+		$actionName=E::get('action',self::$config['_default_action']);
+
 		//url rewrite
 		if(self::$config['_route_enable']===true){
 			require(self::$config['_lib_path'].'core'.DS.'route.php');
 			EP_Route::dispatch($controllerName,$actionName);
-		}else{
-			// use $_GET only if route is disable
-			$controllerName=E::get('controller',$controllerName);
-			$actionName=E::get('action',$actionName);
 		}
 
 		//Role Base Access Control start
