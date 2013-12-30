@@ -140,8 +140,8 @@ class E{
 		//*----------
 		$this->viewObject->importDir(self::$config['_app_path'].'view');
 
-		$controllerName=E::get('controller',self::$config['_default_controller']);
-		$actionName=E::get('action',self::$config['_default_action']);
+		$controllerName=E::get('c',self::$config['_default_controller']);
+		$actionName=E::get('a',self::$config['_default_action']);
 
 		//url rewrite
 		if(self::$config['_route_enable']===true){
@@ -290,7 +290,7 @@ class E{
 		在注册类中寻找已注册的类别名，如找到则返回
 		使得自定的类只要初始化一次即可
 
-		带上obj则表示要初始化
+		带上obj则表示要手动初始化给model一个实体对象
 	*/
 	public static function m($modelName,$obj=null){
 		$inst=self::$instance;
@@ -311,11 +311,34 @@ class E{
 		$inst->_models[$modelName]=$modelObject;
 		return $modelObject;
 	}
-	//目的在于可以比较方便的改APP名。。。
-	//但如果跨APP用的话，会变成当前请求的APP名
-	//TODO:make more functions
-	public static function url($ctrlAct=''){
-		return '/'.self::$config['_app_name'].'/'.$ctrlAct;
+	/*
+		简单的把两个参数串起来
+		ctrl:控制器名称
+		act: 动作名，如果有其它参数可以手动加上
+		arg: 参数
+	*/
+	public static function url($ctrl,$act,$arg=null){
+		$ctrl=strtolower($ctrl);
+		$act=strtolower($act);
+
+		if(self::$config['_route_enable']){
+			$url= '/'.$ctrl.'/'.$act;
+		}else{
+			$url='/c='.$ctrl.'&a='.$act;
+		}
+		if($arg!=null){
+			$a=array();
+			foreach ($arg as $key => $value) {
+				$a[]=$key.'='.urlencode($value);
+			}
+			if(self::$config['_route_enable']){
+				$url=$url.'?'.implode('&', $arg);
+			}else{
+				$url=$url.'&'.implode('&', $arg);
+			}
+			
+		}
+		return $url;
 	}
 
 	//end up session block ,so next session can go on.

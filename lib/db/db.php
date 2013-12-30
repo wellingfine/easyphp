@@ -116,7 +116,7 @@ class EP_DB{
 	public function exec($sql){
 		E::log('Execute SQL: '.$sql,'DB');
 
-		$ret= $this->_pdo->exec($sql);
+		return $this->_pdo->exec($sql);
 	}
 	public function query($sql){
 		E::log('Execute SQL: '.$sql,'DB');
