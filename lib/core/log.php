@@ -34,6 +34,17 @@ class EP_Log{
 		$this->flush();
 	}
 	/*
+		设置抽样概率 0-100
+	*/
+	function setRand($rnd){
+		$r=rand(0,100);
+
+		if($r>$rnd){//不在区间
+			$this->setEnable(false);
+		}
+
+	}
+	/*
 		新建一个Log对象，
 		可以区分开特殊的日志
 	*/
@@ -79,15 +90,21 @@ class EP_Log{
 	}
 	/*
 		在同时并发时手动调用，有可能打乱日志的顺序，但可以马上看到日志
+		$force 强制打日志
 	*/
-	function flush(){
-		if(!$this->enable)return $this;
+	function flush($force=false){
+		if(!$this->enable && !$force)return $this;
 
 		$fp=null;
 		$path=$this->dir.$this->name.'_'.$this->date.'.log';
-
-		$fp = fopen($path, 'a');
-		@chmod($path, 0666);
+		if(file_exists($path)){
+			$fp = fopen($path, 'a');
+		}else{
+			$fp = fopen($path, 'a');
+			chmod($path, 0666);
+		}
+		
+		
 
 		//
 		$log=$this->log;

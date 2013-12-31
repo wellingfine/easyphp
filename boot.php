@@ -8,6 +8,10 @@ $dir=dirname(__FILE__).DS;
 
 //all config
 $config=array(
+	/*
+		默认的主线DB，任何没有设定DSN的数据连接都会使用默认
+	*/
+	'_default_dsn'=>'localhost',
 
 	//
 	'_log_bufferSize'=>1024, //once full will log down to file.
@@ -17,6 +21,11 @@ $config=array(
 		//'core',//framework's tag
 		//'db',//db operation
 	),
+	/*
+		日志抽样机率，对于信息特别多的可以修改这个配置，进行日志的抽样
+		如果脚本发生错误，或抛异常，会马上输出日志
+	*/
+	'_log_rand'=>1,
 	
 	//权限控制 用户详细信息
 	'_rbac_userSessionKey'=>'ep_rbac_user',
@@ -68,5 +77,5 @@ header('Content-Type: text/html;charset='.$config['_charset']);
 //load main entrance
 require($config['_lib_path'].'main.php');
 //create main object E
-E::createMe($config);
-E::i()->start();
+E::create($config);
+

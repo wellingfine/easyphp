@@ -18,6 +18,7 @@ require('lazy.php');
  * 约定：
  * #.dir 表示不带 DS ，path 表示带 DS ，filePath 表示绝对路径
  * #.凡是EasyPHP的类都带上 EP_ 前缀
+ * 全局函数都放在 E 主类
  */
 //global $__starttime;
 $__starttime=microtime (true);
@@ -74,16 +75,12 @@ class E{
 	function __destruct(){
 		session_write_close();
 	}
-	//init all about framework, called in start()
-	//configs , logs ,
-	private function initApp(){
-
-	}
+	
 	/*
 	 函数参数不对，等非致命令错误的话，会到这里
-	 */
+	*/
 	public function _errorHandler ( $errno ,$errstr , $errfile ,$errline){
-		E::log($errstr.' file:'.$errfile.' line:'.$errline,'error')->flush();
+		E::log($errstr.' file:'.$errfile.' line:'.$errline,'error')->flush(true);
 		//
 		if($this->_cur_controller!=null)
 			$this->_cur_controller->__exception($errstr,$errfile,$errline);
@@ -137,8 +134,6 @@ class E{
 
 		set_error_handler(array($this,'_errorHandler'));
 		E::log('from ip:'.$_SERVER['REMOTE_ADDR'],'core');
-		//*----------
-		$this->viewObject->importDir(self::$config['_app_path'].'view');
 
 		$controllerName=E::get('c',self::$config['_default_controller']);
 		$actionName=E::get('a',self::$config['_default_action']);
@@ -182,7 +177,7 @@ class E{
 				$controller->__execute($actionName);
 			}catch(Exception $e){
 				E::log('Exception: '.$e->getMessage()."\n".$e->getTraceAsString(),'error');
-				E::log(' file: '.$e->getFile()." line: ".$e->getLine(),'error')->flush();
+				E::log(' file: '.$e->getFile()." line: ".$e->getLine(),'error')->flush(true);
 				//call controller's exception
 
 				//$controller->__exception($e->getMessage(),$e->getFile(),$e->getLine());
@@ -195,7 +190,7 @@ class E{
 			$this->displayView(self::$config['_controller_not_found']);
 		}
 		//ensure to flush the log.
-		E::log('used '.round( microtime(true)-$__starttime,5 ).'s','core')->flush();
+		E::log('used '.round( microtime(true)-$__starttime,5 ).'s','core')->flush(true);
 	}
 	
 	//directly call viewObject
@@ -251,11 +246,19 @@ class E{
 			}
 		}
 	}
+	/*
+		$dsn:
+			array  直接传入DB配置，适用于临时，或变动较多的值
+			null   默认DB配置
+			string 从配置中获取
+	*/
 	//get database connector
 	//forceNew : true to create a new connection without cache 
 	// why use force new?
-	public static function d($dsn,$forceNew=false){
-		if(!is_array($dsn)){
+	public static function d($dsn=null,$forceNew=false){
+		if($dsn==null){
+			$dsn=self::$config['_default_dsn'];
+		}else if(!is_array($dsn)){
 			$dbConfig=self::c('_db_config');
 			if(!is_array($dbConfig)){
 				throw new Exception('DB Config format error!');
@@ -305,7 +308,7 @@ class E{
 		try{
 			$modelObject=new $modelName();
 		}catch(Exception $e){
-			E::log($e->getMessage())->flush();
+			E::log($e->getMessage())->flush(true);
 			return null;
 		}
 		$inst->_models[$modelName]=$modelObject;
@@ -324,7 +327,7 @@ class E{
 		if(self::$config['_route_enable']){
 			$url= '/'.$ctrl.'/'.$act;
 		}else{
-			$url='/c='.$ctrl.'&a='.$act;
+			$url='/?c='.$ctrl.'&a='.$act;
 		}
 		if($arg!=null){
 			$a=array();
@@ -362,15 +365,16 @@ class E{
 				return true;
 			}
 		}
-		E::log('class file :'.$className.' not found.','error')->flush();
+		E::log('class file :'.$className.' not found.','error')->flush(true);
 		return false;
 		//throw new Exception('class '.$className.' not found.');
 	}
 
 	// call by framework
-	public static function createMe($config){
+	public static function create($config){
 		if(!self::$instance){
 			self::$instance= new E($config);
+			self::$instance->start();
 		}
 	}
 
