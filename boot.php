@@ -8,6 +8,10 @@ $dir=dirname(__FILE__).DS;
 
 //all config
 $config=array(
+	/*
+		默认的主线DB，任何没有设定DSN的数据连接都会使用默认
+	*/
+	'_default_dsn'=>'localhost',
 
 	//
 	'_log_bufferSize'=>1024, //once full will log down to file.
@@ -17,6 +21,11 @@ $config=array(
 		//'core',//framework's tag
 		//'db',//db operation
 	),
+	/*
+		日志抽样机率，对于信息特别多的可以修改这个配置，进行日志的抽样
+		如果脚本发生错误，或抛异常，会马上输出日志
+	*/
+	'_log_rand'=>1,
 	
 	//权限控制 用户详细信息
 	'_rbac_userSessionKey'=>'ep_rbac_user',
@@ -32,15 +41,20 @@ $config=array(
 	//route engine
 	'_route_enable'=>true,
 	
+	//默认控制器，动作
+	'_default_action'=>'index',
+	'_default_controller'=>'default',
+
 	//four types of NotFound
 	//if empty then ignore,but you can see what happen in log.
 	'_controller_not_found'=>'404',
 	'_action_not_found'=>'404',
 	'_view_not_found'=>'',
 	
-	//
+	//环境变量
 	'_charset'=>'utf-8',
 	'_session_life_time'=>432000,
+	'_cache_time'=>36000, //默认缓存时间
 
 
 	//path setting .
@@ -48,6 +62,7 @@ $config=array(
 	'_app_path'=>$dir.'app'.DS,
 	'_cache_path'=>$dir.'app'.DS.'tmp'.DS.'cache'.DS,
 	'_public_path'=>$dir.'public'.DS,
+
 	/*
 		runtime values, framework will set these value when running,
 		so don't change it in any case.
@@ -55,11 +70,12 @@ $config=array(
 	'_controller'=>'',
 	'_action'=>'',
 	'_db_config'=>null,
+	'_path_info'=>'',
 );
 
 header('Content-Type: text/html;charset='.$config['_charset']);
 //load main entrance
 require($config['_lib_path'].'main.php');
 //create main object E
-E::createMe($config);
-E::i()->start();
+E::create($config);
+

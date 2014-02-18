@@ -11,7 +11,7 @@ class EP_Log{
 	private $bufferSize;//缓冲区总大小
 	private $enable=true;
 	
-	private $name; //日志名称
+	private $name; //日志文件名称
 	
 	private $tagFilter;
 	private $date='';
@@ -28,6 +28,21 @@ class EP_Log{
 		$this->name=$name;
 		$this->setTagFilter($tagFilter);
 		$this->dir=$dir;
+	}
+
+	function __destruct(){
+		$this->flush();
+	}
+	/*
+		设置抽样概率 0-100
+	*/
+	function setRand($rnd){
+		$r=rand(0,100);
+
+		if($r>$rnd){//不在区间
+			$this->setEnable(false);
+		}
+
 	}
 	/*
 		新建一个Log对象，
@@ -53,12 +68,7 @@ class EP_Log{
 		$this->enable=$e;
 		return $this;
 	}
-	function log($content='',$tag='',$name=''){
-		//echo "[log::$content]<br>";
-
-		if($name==''){
-			$name=$this->name;
-		}
+	function log($content='',$tag=''){
 		if($content=='')return $this;
 		if(!$this->enable)return $this;
 		
@@ -71,7 +81,7 @@ class EP_Log{
 		}
 		$log=date('[H:i:s]',time()).$tag.': '.$content;
 		$this->currentSize+=strlen($log);
-		$this->log[$name][]=$log;
+		$this->log[]=$log;
 
 		if($this->currentSize>$this->bufferSize){
 			$this->flush();
@@ -80,35 +90,24 @@ class EP_Log{
 	}
 	/*
 		在同时并发时手动调用，有可能打乱日志的顺序，但可以马上看到日志
+		$force 强制打日志
 	*/
-	function flush($name=''){
-		if($name==''){
-			foreach ($this->log as $k=>$l) {
-				if(empty($k))continue;
-				$this->flush($k);
-				
-			}
-			$this->log=array();
-			return ;
-		}
-		if(empty($this->log[$name])){
-			return ;
-		}
-		
-		
+	function flush($force=false){
+		if(!$this->enable && !$force)return $this;
 
 		$fp=null;
-		$path=$this->dir.$name.'_'.$this->date.'.log';
-
-		if (file_exists($path)) {
+		$path=$this->dir.$this->name.'_'.$this->date.'.log';
+		if(file_exists($path)){
 			$fp = fopen($path, 'a');
 		}else{
 			$fp = fopen($path, 'a');
-			//make every can write
 			chmod($path, 0666);
 		}
+		
+		
+
 		//
-		$log=$this->log[$name];
+		$log=$this->log;
 		if ($fp && flock($fp, LOCK_EX)){
 			if(count($log)!=0){
 				$r=fwrite($fp, implode("\n",$log)."\n");
@@ -119,5 +118,6 @@ class EP_Log{
 		}
 		$this->currentSize=0;
 		$this->log=array();
+		return $this;
 	}
 }

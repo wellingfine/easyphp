@@ -28,23 +28,28 @@ class EP_Route{
 
 		$rules=include(E::c('_app_path').'route.php');
 		
-		$path_info = '/';
-		$path_info = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : $path_info;
+		$pathInfo = '/';
+		$pathInfo = isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : $pathInfo;
 		//如有orig_path_info 则使用这个，有时path_info会出错
-		$path_info = isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : $path_info;
+		$pathInfo = isset($_SERVER['ORIG_PATH_INFO']) ? $_SERVER['ORIG_PATH_INFO'] : $pathInfo;
 		//ignore the last '/'
-		$path_info = rtrim($path_info,'/');
+		$pathInfo = rtrim($pathInfo,'/');
 
-		//最后的地址会像这样  $path_info='/control//action'
-		E::log('route pathinfo:'.$path_info,'core');
+		//最后的地址会像这样  $pathInfo='/control//action'
+		E::log('route pathinfo:'.$pathInfo,'core');
+		if(empty($pathInfo))return ;
+		//设置Pathinfo的值 
+		$arr=preg_split('/\/+/',$pathInfo);
+		E::c('_path_info',$arr);
 
+		//遍历 路由规则
 		foreach($rules as $rule){
 			$prefix=E::get('prefix','',$rule);
 			$reg=$rule['rule'];
 			// replace / to \/
 			$reg='/^'.preg_replace('/\//','\\/',$reg).'$/';
 			//E::log('route reg:'.$reg);
-			if(preg_match($reg,$path_info,$matches)){
+			if(preg_match($reg,$pathInfo,$matches)){
 				$ctrlName=is_int( $rule['controller'] )?
 					(E::get($rule['controller'],'',$matches)):
 					$rule['controller'];
@@ -66,9 +71,10 @@ class EP_Route{
 			}
 		}
 		//如果没有匹配到
-		$arr=preg_split('/\/+/',$path_info);
-		$ctrlName=E::get(1,'default',$arr);
-		$actName=E::get(2,'index',$arr);
+		
+		$ctrlName=E::get(1,$ctrlName,$arr);
+		$actName=E::get(2,$actName,$arr);
+		
 	}
 	
 }
