@@ -234,10 +234,8 @@ PDO::PARAM_INPUT_OUTPUT
 	public function error(){
 
 	}
-
 	public function sql(){
 		return new EP_SQL();
-	}
-}
+	}}
 
 ?>
