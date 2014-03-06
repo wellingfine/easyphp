@@ -8,6 +8,9 @@ class Default_Controller extends EP_Controller{
 		echo 'actionAbc';
 		//$this->view('index',);
 	}
+	function index(){
+
+	}
 	function actionDefault(){
 		$this->_views=array(
 			'my_view_args'=>array(
@@ -18,5 +21,6 @@ class Default_Controller extends EP_Controller{
 				'aaaaa','bbbbb'
 			),
 		);
+		$this->show('layout');
 	}
 }

@@ -26,6 +26,7 @@ class EP_Rbac{
 		$testedAclRule=E::get('rule',$dft,$ctrl);
 		//action
 		$act=E::get('actions',array(),$ctrl);
+		$actionName=strtolower($actionName);
 		$testedAclRule=E::get($actionName,$testedAclRule,$act);
 		//replace / to \/ and add ^$ to it 
 		$testedAclRule='/^'.preg_replace('/\//','\\/',$testedAclRule).'$/';

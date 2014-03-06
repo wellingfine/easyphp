@@ -190,7 +190,7 @@ class E{
 			$this->displayView(self::$config['_controller_not_found']);
 		}
 		//ensure to flush the log.
-		E::log('used '.round( microtime(true)-$__starttime,5 ).'s','core')->flush(true);
+		E::log('used '.round( microtime(true)-$__starttime,5 ).'s','core')->flush();
 	}
 	
 	//directly call viewObject
@@ -247,6 +247,12 @@ class E{
 		}
 	}
 	/*
+		
+	*/
+	public static function custom($name){
+
+	}
+	/*
 		$dsn:
 			array  直接传入DB配置，适用于临时，或变动较多的值
 			null   默认DB配置
@@ -258,7 +264,8 @@ class E{
 	public static function d($dsn=null,$forceNew=false){
 		if($dsn==null){
 			$dsn=self::$config['_default_dsn'];
-		}else if(!is_array($dsn)){
+		}
+		if(!is_array($dsn)){
 			$dbConfig=self::c('_db_config');
 			if(!is_array($dbConfig)){
 				throw new Exception('DB Config format error!');
@@ -330,14 +337,14 @@ class E{
 			$url='/?c='.$ctrl.'&a='.$act;
 		}
 		if($arg!=null){
-			$a=array();
+			$arr=array();
 			foreach ($arg as $key => $value) {
-				$a[]=$key.'='.urlencode($value);
+				$alist[]=$key.'='.urlencode($value);
 			}
 			if(self::$config['_route_enable']){
-				$url=$url.'?'.implode('&', $arg);
+				$url=$url.'?'.implode('&', $alist);
 			}else{
-				$url=$url.'&'.implode('&', $arg);
+				$url=$url.'&'.implode('&', $alist);
 			}
 			
 		}
@@ -397,7 +404,7 @@ class E{
 	
 	/*
 		对于没有路由规则的URL，获取整条被 / 分隔的 route
-		$index 下标 1开始 *(注：因为原始路径是以 /开头 所以split后，第一个元素为空)
+		$index 下标 1开始 *(注：因为原始路径是以 /开头 所以split后，第一个元素为空)，要取第一个参数，使用 下标3，如：/ctrl/act/arg1/arg2
 		$getKey 如果下标值为空，用 $_GET的Key去填充
 		$dft  默认值
 	*/

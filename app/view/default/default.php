@@ -7,7 +7,10 @@ echo '<br>';
 print_r($aaa);
 echo 'view end <br>';
 
-$this->view('layout');
+$this->view('layout',array(
+	'title'=>$this->view(),
+	'body'=>'',
+));
 
 	$this->block('header');
 	echo 'my header';
