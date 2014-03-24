@@ -204,11 +204,6 @@ class E{
 	//role is a name that you deside,but remember to write it in the app_dir/acl.php
 	//24*3600=86400
 	public static function setUser($user,$role='',$seconds=86400){
-		session_destroy();
-		session_write_close();
-
-		session_start();
-		session_regenerate_id();
 		//session_cache_expire(intval($seconds/60));
 		//ini_set('session.gc_maxlifetime', ''.$seconds);
 		$_SESSION[self::$config['_rbac_userSessionKey']]=$user;
@@ -229,8 +224,7 @@ class E{
 	}
 
 	public static function i(){
-		return self::$instance;
-	}
+		return self::$instancee	}
 	//get or set configs
 	// 
 	//like some kind of cache pool ,all stuff are in configs
@@ -393,10 +387,16 @@ class E{
 		if($arr==null){
 			$arr=$_GET;
 		}
-		return empty($arr[$key])?$default:$arr[$key];
+		if($arr[$key]===''){
+			return $default;
+		}
+		return $arr[$key];
 	}
 	public static function post($key,$default=''){
-		return empty($_POST[$key])?$default:$_POST[$key];
+		if(isset($_POST[$key]) && $_POST[$key]===''){
+			return $default;
+		}
+		return $_POST[$key];
 	}
 	public static function request($key,$default=''){
 		return empty($_REQUEST[$key])?$default:$_REQUEST[$key];
@@ -456,5 +456,3 @@ class E{
 		return true;
 	}
 }
-
-?>
