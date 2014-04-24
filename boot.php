@@ -70,7 +70,7 @@ $config=array(
 	'_controller'=>'',
 	'_action'=>'',
 	'_db_config'=>null,
-	'_path_info'=>'',
+	'_path_info'=>'',//url route
 );
 
 header('Content-Type: text/html;charset='.$config['_charset']);
