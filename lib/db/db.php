@@ -131,6 +131,13 @@ class EP_DB{
 		return $rows;
 	}
 
+	public function queryOne($sql){
+		$rows=$this->query($sql);
+		if(count($rows)<=0){
+			return null;
+		}
+		return $rows;
+	}
 	// if exec query SQL then return an array of result set
 	//if exec update ,delete ,insert  ,then return affectRows
 	/*

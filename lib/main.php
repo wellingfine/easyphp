@@ -224,7 +224,8 @@ class E{
 	}
 
 	public static function i(){
-		return self::$instancee	}
+		return self::$instance;
+	}
 	//get or set configs
 	// 
 	//like some kind of cache pool ,all stuff are in configs
