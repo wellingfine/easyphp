@@ -388,19 +388,32 @@ class E{
 		if($arr==null){
 			$arr=$_GET;
 		}
-		if(isset($arr[$key]) && $arr[$key]===''){
-			return $default;
+
+		if(isset($arr[$key])){
+			if($arr[$key]===''||$arr[$key]==null){
+				return $default;
+			}
+			return $arr[$key];
 		}
-		return $arr[$key];
+		return $default;
 	}
 	public static function post($key,$default=''){
-		if(isset($_POST[$key]) && $_POST[$key]===''){
-			return $default;
+		if(isset($_POST[$key])){
+			if($_POST[$key]===''||$_POST[$key]==null){
+				return $default;
+			}
+			return $_POST[$key];
 		}
-		return $_POST[$key];
+		return $default;
 	}
 	public static function request($key,$default=''){
-		return empty($_REQUEST[$key])?$default:$_REQUEST[$key];
+		if(isset($_REQUEST[$key])){
+			if($_REQUEST[$key]===''||$_REQUEST[$key]==null){
+				return $default;
+			}
+			return $_REQUEST[$key];
+		}
+		return $default;
 	}
 	
 	/*
