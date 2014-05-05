@@ -388,7 +388,7 @@ class E{
 		if($arr==null){
 			$arr=$_GET;
 		}
-		if($arr[$key]===''){
+		if(isset($arr[$key]) && $arr[$key]===''){
 			return $default;
 		}
 		return $arr[$key];
