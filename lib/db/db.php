@@ -136,7 +136,7 @@ class EP_DB{
 		if(count($rows)<=0){
 			return null;
 		}
-		return $rows;
+		return $rows[0];
 	}
 	// if exec query SQL then return an array of result set
 	//if exec update ,delete ,insert  ,then return affectRows
