@@ -55,7 +55,7 @@ $config=array(
 	'_charset'=>'utf-8',
 	'_session_life_time'=>432000,
 	'_cache_time'=>36000, //默认缓存时间
-
+	'_multi_app_arg'=>'', //是否使用多app模式 ，留空为不使用
 
 	//path setting .
 	'_lib_path'=>$dir.'lib'.DS,
