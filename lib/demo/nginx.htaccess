@@ -1,5 +1,5 @@
 #nginx rewrite rule
 
-if (!-e $request_filename) {
+if (!-f $request_filename) {
 	rewrite ^/(.*)?$ /index.php/$1 break;
 }
